@@ -83,7 +83,7 @@ export default async function InsightsPage() {
             <AlertCircle size={19} className="text-clay-500" />
             Needs attention
           </h2>
-          <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {attention.map((insight) => (
               <InsightCard key={insight.id} insight={insight} />
             ))}
@@ -96,7 +96,7 @@ export default async function InsightsPage() {
         <h2 className="text-xl text-olive-900">Care trends</h2>
         <p className="mt-1.5 text-sm text-olive-600">Two weeks of readings, at a glance.</p>
 
-        <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {metrics.map((metric) => {
             const TrendIcon = trendIcons[metric.trend];
             const tone = toneStyles[metric.tone];
@@ -153,7 +153,7 @@ export default async function InsightsPage() {
       {/* --- Everything else -------------------------------------------------- */}
       <section className="mt-10">
         <h2 className="text-xl text-olive-900">Other observations</h2>
-        <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {rest.map((insight) => (
             <InsightCard key={insight.id} insight={insight} />
           ))}

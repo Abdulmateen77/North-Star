@@ -141,7 +141,7 @@ function TaskBoard() {
         ))}
       </div>
 
-      <div className="stagger mt-6 grid gap-5 lg:grid-cols-3">
+      <div className="stagger mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
         {columns.map((column) => {
           const columnTasks = visible.filter((task) => task.status === column.status);
           return (
@@ -419,7 +419,7 @@ function FilterChip({
 
 function MedicationList({ medications }: { medications: Medication[] }) {
   return (
-    <div className="stagger grid gap-4 md:grid-cols-2">
+    <div className="stagger grid grid-cols-1 gap-4 md:grid-cols-2">
       {medications.map((med) => {
         const low = med.daysSupplyLeft <= 10;
         const color = medicationColor(med.id);
@@ -485,7 +485,7 @@ function ScheduleView({
   people: CarePerson[];
 }) {
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       <section>
         <h2 className="text-xl text-olive-900">Upcoming appointments</h2>
         <div className="stagger mt-4 space-y-3.5">

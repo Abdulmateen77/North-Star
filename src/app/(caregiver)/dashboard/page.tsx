@@ -44,7 +44,7 @@ export default async function DashboardPage() {
       />
 
       {/* --- Briefing + what needs attention, side by side ------------------- */}
-      <div className="stagger mt-7 grid gap-5 lg:grid-cols-3">
+      <div className="stagger mt-7 grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card
           as="section"
           className="mesh-ignite overflow-hidden border-0 p-6 sm:p-7 lg:col-span-2"
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* --- Her day + today's priorities ------------------------------------ */}
-      <div className="stagger mt-5 grid gap-5 lg:grid-cols-2">
+      <div className="stagger mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
         <Card className="p-6">
           <CardHeader
             title={`${receiverFirstName}'s day`}
@@ -101,7 +101,9 @@ export default async function DashboardPage() {
             }
           />
 
-          <div className="mt-5 flex items-center gap-6">
+          {/* Stacked on narrow screens — side by side once there's room for
+              both the ring and full, unabbreviated medicine names. */}
+          <div className="mt-5 flex flex-col items-center gap-5 sm:flex-row sm:gap-6">
             <ProgressRing value={takenCount / doses.length} size={104} stroke={9}>
               <div>
                 <p className="text-2xl leading-none font-bold text-olive-900">
@@ -112,7 +114,7 @@ export default async function DashboardPage() {
               </div>
             </ProgressRing>
 
-            <ul className="min-w-0 flex-1 space-y-1.5">
+            <ul className="w-full min-w-0 flex-1 space-y-1.5 sm:w-auto">
               {doses.map((dose) => (
                 <DoseRow key={dose.id} dose={dose} />
               ))}

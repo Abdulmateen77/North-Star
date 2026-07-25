@@ -66,7 +66,7 @@ export default function HomePage() {
         </section>
 
         <section
-          className="animate-fade-up grid gap-5 sm:grid-cols-2"
+          className="animate-fade-up grid grid-cols-1 gap-5 sm:grid-cols-2"
           style={{ animationDelay: "0.12s" }}
         >
           <RoleDoor
