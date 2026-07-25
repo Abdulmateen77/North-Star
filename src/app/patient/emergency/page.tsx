@@ -119,7 +119,12 @@ export default async function PatientEmergencyPage() {
           {receiver.nhsNumber !== null ? (
             <Row label="NHS number" value={receiver.nhsNumber} />
           ) : null}
-          <Row label="Recent surgery" value="Right hip replacement, 2 July 2026" />
+          {receiver.recentProcedure !== null ? (
+            <Row
+              label="Recent surgery"
+              value={`${receiver.recentProcedure}${receiver.recentProcedureDate !== null ? `, ${receiver.recentProcedureDate}` : ""}`}
+            />
+          ) : null}
         </dl>
       </section>
     </>

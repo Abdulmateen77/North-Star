@@ -15,7 +15,18 @@ import type {
   CareTask,
   Medication,
   Reminder,
+  ReminderKind,
+  TaskCategory,
 } from "@/data/types";
+
+/** How a task's category reads once it becomes a standing reminder. */
+const categoryToReminderKind: Record<TaskCategory, ReminderKind> = {
+  medication: "medication",
+  appointment: "appointment",
+  "daily-living": "movement",
+  wellbeing: "custom",
+  admin: "custom",
+};
 
 export type SetupKind = "task" | "reminder" | "medicine" | "appointment";
 
@@ -31,6 +42,10 @@ interface CareContextValue {
   addMedication: (medication: Medication) => void;
   addAppointment: (appointment: Appointment) => void;
   setTaskStatus: (id: string, status: CareTask["status"]) => void;
+  /** Swipe-to-complete: crosses a task out without cycling through "in progress". */
+  crossOutTask: (id: string) => void;
+  /** Tap-to-convert: turns a one-off task into a standing reminder. */
+  convertTaskToReminder: (id: string) => void;
 
   /** Which quick-setup form is open, or null when the sheet is closed. */
   setupKind: SetupKind | null;
@@ -104,6 +119,44 @@ export function CareProvider({
     );
   }, []);
 
+  const crossOutTask = useCallback((id: string) => {
+    setTasks((current) =>
+      current.map((task) =>
+        task.id === id ? { ...task, status: "done", completedAt: "Just now" } : task,
+      ),
+    );
+    setToast("Crossed off the list");
+  }, []);
+
+  const convertTaskToReminder = useCallback(
+    (id: string) => {
+      // Deliberately not nested inside setTasks's updater: calling one
+      // setter from inside another's functional updater means React's
+      // dev-mode purity check re-runs the outer updater, which fires the
+      // inner setReminders call again for real — the reminder ends up added
+      // twice. Reading `tasks` from the closure and keeping every setter
+      // call at the top level, as siblings, avoids that.
+      const task = tasks.find((item) => item.id === id);
+      if (task === undefined) return;
+
+      setReminders((existing) => [
+        {
+          id: `rem-${Date.now()}`,
+          title: task.title,
+          kind: categoryToReminderKind[task.category],
+          timeLabel: task.dueLabel,
+          repeatLabel: "Once",
+          enabled: true,
+          lastConfirmed: null,
+        },
+        ...existing,
+      ]);
+      setTasks((current) => current.filter((item) => item.id !== id));
+      setToast(`"${task.title}" is now a reminder`);
+    },
+    [tasks],
+  );
+
   const value = useMemo<CareContextValue>(
     () => ({
       tasks,
@@ -116,6 +169,8 @@ export function CareProvider({
       addMedication,
       addAppointment,
       setTaskStatus,
+      crossOutTask,
+      convertTaskToReminder,
       setupKind,
       openSetup: setSetupKind,
       closeSetup: () => setSetupKind(null),
@@ -133,6 +188,8 @@ export function CareProvider({
       addMedication,
       addAppointment,
       setTaskStatus,
+      crossOutTask,
+      convertTaskToReminder,
       setupKind,
       toast,
     ],

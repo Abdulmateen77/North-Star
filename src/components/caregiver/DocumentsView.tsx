@@ -64,6 +64,7 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
       pageCount: 1,
       aiSummary: null,
       extractedFacts: [],
+      fullText: null,
       generatedTaskIds: [],
       progress: 0,
     };
@@ -91,6 +92,7 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
                 { label: "Added to timeline", value: "Yes" },
                 { label: "Medicine changes", value: "None found" },
               ],
+              fullText: `[Transcribed from ${doc.fileName}]\n\nThis is where the full text North Star read from your upload will appear once document processing is connected.`,
             };
           }
 

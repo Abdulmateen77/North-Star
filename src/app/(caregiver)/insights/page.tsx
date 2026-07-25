@@ -71,8 +71,8 @@ export default async function InsightsPage() {
           to the gate without the frame — a first since the operation.
         </p>
         <p className="mt-3 max-w-3xl leading-relaxed text-pretty text-olive-600">
-          Two things need the family: the six-week orthopaedic follow-up still isn&apos;t booked,
-          and her Ramipril runs out in nine days.
+          Two small things for whenever suits: the six-week orthopaedic follow-up still
+          needs booking, and her Ramipril is worth reordering soon.
         </p>
       </Card>
 

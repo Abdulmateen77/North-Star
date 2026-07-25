@@ -60,9 +60,7 @@ export default async function DashboardPage() {
           </div>
 
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-pretty text-bone-50">
-            {receiverFirstName} took her morning medicines on time and did her physio set.
-            Two things need you today: the six-week orthopaedic follow-up still needs
-            booking, and her Ramipril is down to nine days.
+            {`Good news — ${receiverFirstName} had a settled morning, took her medicines on time and got through her physio set without any trouble. Whenever you have a moment, it'd help to book her six-week follow-up and reorder her Ramipril — but there's no rush.`}
           </p>
 
           <Link

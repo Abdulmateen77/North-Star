@@ -43,6 +43,12 @@ export const careReceiver: CareReceiver = {
   allergies: ["Penicillin"],
   bloodType: "O+",
   nhsNumber: "485 777 3456",
+  gpName: "Dr. Priya Raman",
+  gpPractice: "Elmwood Surgery",
+  consultantName: "Mr. Stephen Cole",
+  hospital: "Royal Free Hospital",
+  recentProcedure: "Right total hip replacement",
+  recentProcedureDate: "2 July 2026",
 };
 
 export const caregivers: CarePerson[] = [
@@ -531,6 +537,8 @@ export const careDocuments: CareDocument[] = [
       { label: "Kidney function", value: "Normal" },
       { label: "Taken", value: "22 July 2026" },
     ],
+    fullText:
+      "ELMWOOD SURGERY\nPathology Report\n\nPatient: Margaret Okafor   DOB: 14/03/1948   NHS No: 485 777 3456\nSample date: 22/07/2026   Reported: 24/07/2026\nRequested by: Dr P Raman\n\nHbA1c: 51 mmol/mol (Target <53 mmol/mol) — previous 22/04/2026: 58 mmol/mol\nFasting glucose: 6.8 mmol/L (Ref 4.0–7.8)\n\nRenal profile\nSodium: 140 mmol/L (Ref 135–145)\nPotassium: 4.3 mmol/L (Ref 3.5–5.1)\neGFR: 71 mL/min/1.73m² (Ref >60)\n\nLiver function\nALT: 22 U/L (Ref <41)\nBilirubin: 9 µmol/L (Ref <21)\n\nComment: HbA1c improved and within target range. Renal and liver indices unremarkable. Continue current management; review at diabetes annual review.\n\nDr P Raman, MRCGP",
     generatedTaskIds: [],
     progress: 100,
   },
@@ -553,6 +561,8 @@ export const careDocuments: CareDocument[] = [
       { label: "Exercises", value: "6" },
       { label: "Review", value: "30 July" },
     ],
+    fullText:
+      "ROWAN COMMUNITY CLINIC\nPhysiotherapy Department\n\nPatient: Margaret Okafor\nPhysiotherapist: Nadia Hassan\nPlan period: Weeks 3–6 post right THR\n\nDaily home exercise programme (mornings, approx. 10 minutes):\n1. Seated knee extension — 3 sets of 10, each leg\n2. Seated hip flexion — 3 sets of 10\n3. Seated ankle pumps — 20 reps\n4. Seated marching — 2 minutes\n5. Standing hip abduction (holding support) — 3 sets of 8\n6. Standing mini squats (holding support) — 3 sets of 8\n\nProgression note: increase repetitions gradually as tolerated. Stop immediately if pain is sharp rather than a dull ache, and contact the clinic if it persists beyond 24 hours.\n\nNext review: 30 July 2026, session 4.\n\nNadia Hassan, MCSP",
     generatedTaskIds: ["task-3"],
     progress: 100,
   },
@@ -574,6 +584,8 @@ export const careDocuments: CareDocument[] = [
       { label: "Unchanged", value: "4 medicines" },
       { label: "Effective", value: "10 July 2026" },
     ],
+    fullText:
+      "ELMWOOD SURGERY\nRepeat Prescription — Updated\n\nPatient: Margaret Okafor   NHS No: 485 777 3456\nDate: 10/07/2026   Prescriber: Dr P Raman\n\nMetformin 500mg tablets — take one twice daily with food — quantity 56\nRamipril 5mg tablets — take one each morning — quantity 28 (dose increased from 2.5mg following elevated home readings)\nAtorvastatin 20mg tablets — take one at night — quantity 28\nAlendronic acid 70mg tablets — take one weekly on rising — quantity 4\nParacetamol 500mg tablets — take up to two, up to four times daily as required — quantity 100\n\nChange summary: Ramipril increased from 2.5mg to 5mg once daily, effective 10 July 2026. All other items unchanged. Next medication review due at the diabetes annual review.\n\nDr P Raman, MRCGP",
     generatedTaskIds: [],
     progress: 100,
   },
@@ -598,6 +610,8 @@ export const careDocuments: CareDocument[] = [
       { label: "New medicine", value: "Alendronic acid 70mg" },
       { label: "Follow-up", value: "By 14 August" },
     ],
+    fullText:
+      "ROYAL FREE HOSPITAL\nDischarge Summary\n\nPatient: Margaret Okafor   DOB: 14/03/1948   NHS No: 485 777 3456\nAdmitted: 02/07/2026   Discharged: 06/07/2026\nConsultant: Mr Stephen Cole, Trauma & Orthopaedics\n\nProcedure: Right total hip replacement (cemented), performed 02/07/2026 under spinal anaesthesia. No intra-operative complications. Post-operative course uncomplicated; mobilising with a frame by day 2, physiotherapy-cleared for discharge on day 4.\n\nMedication changes on discharge:\nAlendronic acid 70mg once weekly — started, for bone protection\nParacetamol 500mg as required — started, for post-operative pain\nAll other regular medicines unchanged.\n\nEquipment provided: walking frame, raised toilet seat.\n\nFollow-up required:\n— Orthopaedic outpatient review at 6 weeks (book before 14/08/2026)\n— Occupational therapy home visit recommended a grab rail be fitted beside the bath\n— GP to continue routine diabetes and hypertension monitoring\n\nMr Stephen Cole, FRCS (Orth)",
     generatedTaskIds: ["task-1", "task-5"],
     progress: 100,
   },
