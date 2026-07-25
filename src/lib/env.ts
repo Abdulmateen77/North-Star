@@ -18,6 +18,7 @@ const envSchema = z.object({
     .positive()
     .default(10 * 1024 * 1024),
   HEALTH_RECORDS_AI_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
+  CRON_SECRET: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

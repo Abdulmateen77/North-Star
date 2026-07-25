@@ -41,6 +41,14 @@ export type DomainEvent =
       occurredAt: string;
     }
   | {
+      type: "ReminderMissed";
+      careSpaceId: string;
+      reminderId: string;
+      title: string;
+      missedAt: string;
+      occurredAt: string;
+    }
+  | {
       type: "AppointmentCreated";
       careSpaceId: string;
       appointmentId: string;

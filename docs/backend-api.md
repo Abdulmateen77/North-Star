@@ -68,6 +68,7 @@ API routes expect an access token in the HTTP `Authorization` header using the B
 - `GET /api/care-management/reminders?careSpaceId=:careSpaceId`
 - `POST /api/care-management/reminders`
 - `POST /api/care-management/reminders/:id/trigger`
+- `POST /api/care-management/reminders/process-due`
 - `GET /api/timeline?careSpaceId=:careSpaceId`
 - `GET /api/timeline/feed?careSpaceId=:careSpaceId`
 - `GET /api/timeline/events/:id`
@@ -187,6 +188,7 @@ Care Management owns coordination work items and reminders. It does not own sour
 - `POST /api/care-management/tasks/:id/complete` completes a task and publishes `TaskCompleted`.
 - `POST /api/care-management/reminders` creates a scheduled reminder.
 - `POST /api/care-management/reminders/:id/trigger` marks a reminder triggered and publishes `ReminderTriggered`.
+- `POST /api/care-management/reminders/process-due` is a cron-only endpoint protected by `CRON_SECRET`. It processes due scheduled reminders, marks recent due reminders as triggered, marks stale due reminders as missed, and publishes `ReminderTriggered` / `ReminderMissed` events.
 
 ## Timeline
 

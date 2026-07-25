@@ -180,6 +180,18 @@ export class SupabaseReminderRepository implements ReminderRepository {
     return ((data ?? []) as ReminderRow[]).map(mapReminderRow);
   }
 
+  async findDue(now: string, limit: number): Promise<CareReminder[]> {
+    const { data, error } = await this.supabase
+      .from("care_reminders")
+      .select("*")
+      .eq("status", "scheduled")
+      .lte("scheduled_for", now)
+      .order("scheduled_for", { ascending: true })
+      .limit(limit);
+    throwIfSupabaseError(error);
+    return ((data ?? []) as ReminderRow[]).map(mapReminderRow);
+  }
+
   async update(id: string, patch: Partial<CareReminder>): Promise<CareReminder> {
     const update: Record<string, unknown> = {};
     if (patch.title !== undefined) update.title = patch.title;

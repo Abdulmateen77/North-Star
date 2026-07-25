@@ -53,6 +53,18 @@ export function mapDomainEventToTimelineInput(event: DomainEvent): CreateTimelin
         createdAt: event.occurredAt,
         metadata: event,
       };
+    case "ReminderMissed":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: `Reminder missed: ${event.title}`,
+        description: null,
+        sourceDomain: "care-management",
+        sourceId: event.reminderId,
+        createdBy: null,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
     case "FamilyMemberInvited":
       return {
         careSpaceId: event.careSpaceId,

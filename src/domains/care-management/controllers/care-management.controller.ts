@@ -1,6 +1,8 @@
+import { getEnv } from "@/lib/env";
 import { jsonResponse, withApiHandler } from "@/lib/http";
 import { parseJsonBody, resolveRouteParams, validateParams } from "@/lib/validation";
 import { authenticateRequest } from "@/services/auth.service";
+import { requireCronSecret } from "@/shared/security/cron-auth";
 
 import {
   createReminderSchema,
@@ -11,6 +13,7 @@ import {
   taskIdParamSchema,
 } from "../schemas/api.schema";
 import type { CareManagementService } from "../services/care-management.service";
+import type { ReminderSchedulerService } from "../services/reminder-scheduler.service";
 
 export type IdRouteContext = { params: Promise<{ id: string }> | { id: string } };
 
@@ -19,7 +22,11 @@ function queryObject(request: Request) {
 }
 
 export class CareManagementController {
-  constructor(private readonly service: CareManagementService) {}
+  constructor(
+    private readonly service: CareManagementService,
+    private readonly scheduler: ReminderSchedulerService,
+    private readonly cronSecret: () => string | undefined = () => getEnv().CRON_SECRET,
+  ) {}
 
   async createTask(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
@@ -85,5 +92,17 @@ export class CareManagementController {
       const reminder = await this.service.triggerReminder(actor.id, params.id);
       return jsonResponse({ reminder });
     });
+  }
+
+  async processDueReminders(request: Request): Promise<Response> {
+    return withApiHandler(
+      request,
+      async () => {
+        requireCronSecret(request, this.cronSecret());
+        const result = await this.scheduler.processDueReminders();
+        return jsonResponse(result);
+      },
+      { rateLimit: false },
+    );
   }
 }

@@ -78,6 +78,7 @@ OPENAI_OCR_MODEL=gpt-4o-mini
 HEALTH_RECORDS_STORAGE_BUCKET=health-records
 HEALTH_RECORDS_MAX_FILE_SIZE_BYTES=10485760
 HEALTH_RECORDS_AI_TIMEOUT_MS=30000
+CRON_SECRET=change-me
 ```
 
 ---
@@ -102,6 +103,7 @@ Implemented foundation code includes:
 - Notifications, Realtime gateway abstraction, Dashboard aggregation, and Analytics insights
 - Shared mutation rate limiting with consistent `RATE_LIMITED` API errors
 - Durable audit logging for domain events with sensitive metadata redaction
+- Cron-protected due-reminder processing for triggered/missed reminder automation
 
 See `docs/backend-api.md` for the implemented API surface.
 

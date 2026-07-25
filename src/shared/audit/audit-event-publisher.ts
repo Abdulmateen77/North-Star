@@ -17,6 +17,8 @@ function actorAndSource(event: DomainEvent): AuditActor {
       return { actorId: event.createdBy, sourceDomain: "care-management", sourceId: event.reminderId };
     case "ReminderTriggered":
       return { actorId: null, sourceDomain: "care-management", sourceId: event.reminderId };
+    case "ReminderMissed":
+      return { actorId: null, sourceDomain: "care-management", sourceId: event.reminderId };
     case "AppointmentCreated":
       return { actorId: event.createdBy, sourceDomain: "care-management", sourceId: event.appointmentId };
     case "AppointmentCompleted":
