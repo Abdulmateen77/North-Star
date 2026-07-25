@@ -1,0 +1,489 @@
+"use client";
+
+import {
+  AlarmClock,
+  CalendarDays,
+  Check,
+  Clock,
+  ListChecks,
+  MapPin,
+  Pill,
+  Plus,
+  RotateCcw,
+  User,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+
+import { Avatar } from "@/components/ui/Avatar";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { StarMark } from "@/components/ui/Logo";
+import { cn } from "@/components/ui/cn";
+import type {
+  Appointment,
+  CarePerson,
+  CareTask,
+  Medication,
+  Reminder,
+  TaskPriority,
+  TaskStatus,
+} from "@/data/types";
+
+type Tab = "tasks" | "medicines" | "schedule";
+
+const tabs: Array<{ id: Tab; label: string; icon: typeof ListChecks }> = [
+  { id: "tasks", label: "Tasks", icon: ListChecks },
+  { id: "medicines", label: "Medicines", icon: Pill },
+  { id: "schedule", label: "Appointments & reminders", icon: CalendarDays },
+];
+
+export function CarePlanView({
+  tasks: initialTasks,
+  medications,
+  appointments,
+  reminders,
+  people,
+}: {
+  tasks: CareTask[];
+  medications: Medication[];
+  appointments: Appointment[];
+  reminders: Reminder[];
+  people: CarePerson[];
+}) {
+  const [tab, setTab] = useState<Tab>("tasks");
+
+  return (
+    <>
+      <div className="no-scrollbar animate-fade-up mt-7 flex gap-2 overflow-x-auto border-b border-sand-300/60 pb-px">
+        {tabs.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            aria-current={tab === id ? "page" : undefined}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition duration-200",
+              tab === id
+                ? "border-clay-500 text-ink-900"
+                : "border-transparent text-ink-400 hover:text-ink-600",
+            )}
+          >
+            <Icon size={16} />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-7">
+        {tab === "tasks" ? <TaskBoard initialTasks={initialTasks} people={people} /> : null}
+        {tab === "medicines" ? <MedicationList medications={medications} /> : null}
+        {tab === "schedule" ? (
+          <ScheduleView
+            appointments={appointments}
+            reminders={reminders}
+            people={people}
+          />
+        ) : null}
+      </div>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tasks                                                                       */
+/* -------------------------------------------------------------------------- */
+
+const columns: Array<{ status: TaskStatus; label: string; hint: string }> = [
+  { status: "todo", label: "To do", hint: "Nobody has started these yet" },
+  { status: "in-progress", label: "In progress", hint: "Someone's on it" },
+  { status: "done", label: "Done", hint: "Completed recently" },
+];
+
+const priorityTone: Record<TaskPriority, BadgeTone> = {
+  high: "rose",
+  medium: "gold",
+  low: "neutral",
+};
+
+function TaskBoard({
+  initialTasks,
+  people,
+}: {
+  initialTasks: CareTask[];
+  people: CarePerson[];
+}) {
+  const [tasks, setTasks] = useState(initialTasks);
+  const [assigneeFilter, setAssigneeFilter] = useState<string | null>(null);
+
+  const visible = useMemo(
+    () =>
+      assigneeFilter === null
+        ? tasks
+        : tasks.filter((task) => task.assigneeId === assigneeFilter),
+    [tasks, assigneeFilter],
+  );
+
+  /** Click advances a task through the workflow; done cycles back to to-do. */
+  function advance(id: string) {
+    setTasks((current) =>
+      current.map((task) => {
+        if (task.id !== id) return task;
+        const next: TaskStatus =
+          task.status === "todo" ? "in-progress" : task.status === "in-progress" ? "done" : "todo";
+        return {
+          ...task,
+          status: next,
+          completedAt: next === "done" ? "Just now" : null,
+        };
+      }),
+    );
+  }
+
+  const openCount = tasks.filter((t) => t.status !== "done").length;
+
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto">
+          <FilterChip
+            active={assigneeFilter === null}
+            onClick={() => setAssigneeFilter(null)}
+            label={`Everyone (${openCount} open)`}
+          />
+          {people.map((person) => (
+            <FilterChip
+              key={person.id}
+              active={assigneeFilter === person.id}
+              onClick={() => setAssigneeFilter(person.id)}
+              label={person.fullName.split(" ")[0]}
+              avatar={<Avatar initials={person.initials} accent={person.accent} size="xs" />}
+            />
+          ))}
+        </div>
+
+        <Button size="sm" variant="soft">
+          <Plus size={15} />
+          New task
+        </Button>
+      </div>
+
+      <div className="stagger mt-6 grid gap-5 lg:grid-cols-3">
+        {columns.map((column) => {
+          const columnTasks = visible.filter((task) => task.status === column.status);
+          return (
+            <div key={column.status}>
+              <div className="flex items-baseline justify-between px-1">
+                <h2 className="text-base text-ink-900">{column.label}</h2>
+                <span className="text-xs text-ink-400">{columnTasks.length}</span>
+              </div>
+              <p className="mt-0.5 px-1 text-xs text-ink-400">{column.hint}</p>
+
+              <ul className="mt-3.5 space-y-3">
+                {columnTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    person={people.find((p) => p.id === task.assigneeId) ?? null}
+                    onAdvance={() => advance(task.id)}
+                  />
+                ))}
+
+                {columnTasks.length === 0 ? (
+                  <li className="rounded-card border border-dashed border-sand-300 px-4 py-8 text-center text-sm text-ink-400">
+                    Nothing here
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+function TaskCard({
+  task,
+  person,
+  onAdvance,
+}: {
+  task: CareTask;
+  person: CarePerson | null;
+  onAdvance: () => void;
+}) {
+  const done = task.status === "done";
+
+  return (
+    <Card as="li" className={cn("p-4", done && "opacity-70")}>
+      <div className="flex items-start gap-3">
+        <button
+          type="button"
+          onClick={onAdvance}
+          aria-label={done ? `Reopen ${task.title}` : `Advance ${task.title}`}
+          className={cn(
+            "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 transition duration-200",
+            done
+              ? "border-sage-500 bg-sage-500 text-white"
+              : task.status === "in-progress"
+                ? "border-clay-500 bg-clay-100 hover:bg-clay-300"
+                : "border-sand-400 hover:border-clay-500",
+          )}
+        >
+          {done ? <Check size={12} strokeWidth={3} /> : null}
+          {task.status === "in-progress" ? (
+            <span className="size-1.5 rounded-full bg-clay-500" />
+          ) : null}
+        </button>
+
+        <div className="min-w-0 flex-1">
+          <p
+            className={cn(
+              "font-medium text-ink-900",
+              done && "text-ink-400 line-through decoration-sand-400",
+            )}
+          >
+            {task.title}
+          </p>
+          {task.detail ? (
+            <p className="mt-1 text-sm leading-relaxed text-ink-600">{task.detail}</p>
+          ) : null}
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {!done ? (
+              <Badge tone={priorityTone[task.priority]}>
+                <Clock size={11} />
+                {task.dueLabel}
+              </Badge>
+            ) : (
+              <Badge tone="sage">
+                <Check size={11} />
+                {task.completedAt}
+              </Badge>
+            )}
+            {task.generatedByAi ? (
+              <Badge tone="plum">
+                <StarMark size={10} />
+                AI
+              </Badge>
+            ) : null}
+          </div>
+
+          <div className="mt-3 flex items-center gap-2 border-t border-sand-300/50 pt-3">
+            {person ? (
+              <>
+                <Avatar initials={person.initials} accent={person.accent} size="xs" />
+                <span className="text-xs text-ink-600">{person.fullName}</span>
+              </>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs text-ink-400">
+                <User size={12} />
+                Unassigned
+              </span>
+            )}
+            {done ? (
+              <button
+                type="button"
+                onClick={onAdvance}
+                className="ml-auto inline-flex items-center gap-1 text-xs text-ink-400 transition hover:text-ink-600"
+              >
+                <RotateCcw size={11} />
+                Reopen
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  label,
+  avatar,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  avatar?: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex shrink-0 items-center gap-2 rounded-pill border px-3.5 py-2 text-sm font-medium transition duration-200",
+        active
+          ? "border-clay-500 bg-clay-500 text-white"
+          : "border-sand-300/70 bg-white text-ink-600 hover:border-sand-400",
+      )}
+    >
+      {avatar}
+      {label}
+    </button>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Medicines                                                                   */
+/* -------------------------------------------------------------------------- */
+
+function MedicationList({ medications }: { medications: Medication[] }) {
+  return (
+    <div className="stagger grid gap-4 md:grid-cols-2">
+      {medications.map((med) => {
+        const low = med.daysSupplyLeft <= 10;
+        return (
+          <Card key={med.id} className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-clay-50 text-clay-500">
+                  <Pill size={19} />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-lg text-ink-900">
+                    {med.name}{" "}
+                    <span className="font-sans text-sm font-normal text-ink-400">
+                      {med.dosage}
+                    </span>
+                  </h3>
+                  <p className="mt-0.5 text-sm text-ink-600">{med.purpose}</p>
+                </div>
+              </div>
+              {low ? <Badge tone="rose">{med.daysSupplyLeft} days left</Badge> : null}
+            </div>
+
+            <p className="mt-4 rounded-2xl bg-cream-100 px-3.5 py-2.5 text-sm text-ink-600">
+              {med.instruction}
+            </p>
+
+            {med.changedNote ? (
+              <p className="mt-2.5 flex items-start gap-2 text-xs text-clay-600">
+                <StarMark size={11} className="mt-0.5 shrink-0" />
+                {med.changedNote}
+              </p>
+            ) : null}
+
+            <div className="mt-4 flex items-center justify-between border-t border-sand-300/50 pt-3.5">
+              <span className="text-xs text-ink-400">Prescribed by {med.prescribedBy}</span>
+              <span className="text-xs text-ink-400">{med.refillsRemaining} refills</span>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Appointments & reminders                                                    */
+/* -------------------------------------------------------------------------- */
+
+function ScheduleView({
+  appointments,
+  reminders,
+  people,
+}: {
+  appointments: Appointment[];
+  reminders: Reminder[];
+  people: CarePerson[];
+}) {
+  return (
+    <div className="grid gap-5 lg:grid-cols-2">
+      <section>
+        <h2 className="text-xl text-ink-900">Upcoming appointments</h2>
+        <div className="stagger mt-4 space-y-3.5">
+          {appointments.map((appt) => {
+            const escort = people.find((p) => p.id === appt.escortId) ?? null;
+            return (
+              <Card key={appt.id} className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h3 className="text-lg text-ink-900">{appt.title}</h3>
+                    <p className="mt-0.5 text-sm text-ink-600">{appt.clinician}</p>
+                  </div>
+                  <Badge tone="clay">{appt.dateLabel}</Badge>
+                </div>
+
+                <div className="mt-4 space-y-2 text-sm text-ink-600">
+                  <p className="flex items-center gap-2">
+                    <Clock size={14} className="text-ink-400" />
+                    {appt.timeLabel}
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <MapPin size={14} className="mt-0.5 shrink-0 text-ink-400" />
+                    {appt.location}
+                  </p>
+                </div>
+
+                {appt.notes ? (
+                  <p className="mt-3.5 rounded-2xl bg-cream-100 px-3.5 py-2.5 text-sm text-ink-600">
+                    {appt.notes}
+                  </p>
+                ) : null}
+
+                <div className="mt-4 flex items-center gap-2 border-t border-sand-300/50 pt-3.5">
+                  {escort ? (
+                    <>
+                      <Avatar initials={escort.initials} accent={escort.accent} size="xs" />
+                      <span className="text-xs text-ink-600">
+                        {escort.fullName.split(" ")[0]} is taking her
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-clay-600">Nobody assigned yet</span>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-xl text-ink-900">Reminders</h2>
+        <p className="mt-1 text-sm text-ink-600">
+          What Margaret is nudged about, and whether she confirmed.
+        </p>
+
+        <Card className="stagger mt-4 divide-y divide-sand-300/50 p-2">
+          {reminders.map((reminder) => (
+            <div key={reminder.id} className="flex items-center gap-3.5 px-3.5 py-3.5">
+              <span
+                className={cn(
+                  "grid size-9 shrink-0 place-items-center rounded-2xl",
+                  reminder.enabled
+                    ? "bg-sage-50 text-sage-500"
+                    : "bg-cream-200 text-ink-400",
+                )}
+              >
+                <AlarmClock size={17} />
+              </span>
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-ink-900">{reminder.title}</p>
+                <p className="truncate text-xs text-ink-400">
+                  {reminder.timeLabel} · {reminder.repeatLabel}
+                </p>
+              </div>
+
+              <div className="shrink-0 text-right">
+                {reminder.enabled ? (
+                  reminder.lastConfirmed ? (
+                    <span className="text-xs text-sage-600">{reminder.lastConfirmed}</span>
+                  ) : (
+                    <span className="text-xs text-ink-400">Not yet due</span>
+                  )
+                ) : (
+                  <span className="text-xs text-ink-400">Paused</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </Card>
+      </section>
+    </div>
+  );
+}

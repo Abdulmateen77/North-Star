@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   North Star — design tokens
+   A warm, calm, premium system. Wellness-first, never clinical.
+   ========================================================================== */
+
+@theme {
+  /* --- Warm neutrals: the canvas everything sits on --------------------- */
+  --color-cream-50: #fdfbf9;
+  --color-cream-100: #faf6f1;
+  --color-cream-200: #f4ede4;
+  --color-sand-300: #e9ddce;
+  --color-sand-400: #d8c7b4;
+
+  /* --- Ink: warm charcoal, never pure black ---------------------------- */
+  --color-ink-900: #2a2521;
+  --color-ink-800: #3d362f;
+  --color-ink-600: #6b6058;
+  --color-ink-400: #9a8d82;
+
+  /* --- Clay: the primary. Human, grounding, warm ------------------------ */
+  --color-clay-50: #fbf1ec;
+  --color-clay-100: #f5dfd3;
+  --color-clay-300: #dca98c;
+  --color-clay-500: #c4795a;
+  --color-clay-600: #a85f42;
+  --color-clay-700: #8a4b33;
+
+  /* --- Sage: health, progress, things going well ------------------------ */
+  --color-sage-50: #eff4ed;
+  --color-sage-100: #dce7d8;
+  --color-sage-300: #a8c0a1;
+  --color-sage-500: #7a9a72;
+  --color-sage-600: #5e7c57;
+
+  /* --- Gold: the star. Highlights and moments of warmth ----------------- */
+  --color-gold-50: #fdf6e6;
+  --color-gold-100: #f9e9c4;
+  --color-gold-400: #eac468;
+  --color-gold-500: #dda92f;
+
+  /* --- Plum: the AI voice. Distinct but still soft ---------------------- */
+  --color-plum-50: #f3f0f6;
+  --color-plum-100: #e4dcec;
+  --color-plum-400: #9c89b0;
+  --color-plum-500: #7c6792;
+
+  /* --- Rose: attention. Soft enough never to alarm a worried family ----- */
+  --color-rose-50: #fbefee;
+  --color-rose-100: #f5d9d6;
+  --color-rose-400: #d98e88;
+  --color-rose-500: #c36b63;
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* --- Radii: generous and organic -------------------------------------- */
+  --radius-card: 1.5rem;
+  --radius-panel: 2rem;
+  --radius-pill: 999px;
+
+  /* --- Shadows: warm-tinted, diffuse, never harsh ----------------------- */
+  --shadow-soft: 0 1px 2px rgba(42, 37, 33, 0.04), 0 8px 24px -8px rgba(42, 37, 33, 0.08);
+  --shadow-lift: 0 2px 4px rgba(42, 37, 33, 0.04), 0 16px 40px -12px rgba(42, 37, 33, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(196, 121, 90, 0.12), 0 12px 32px -8px rgba(196, 121, 90, 0.22);
+
+  /* --- Motion: slow, easing in and out. Nothing snaps. ------------------ */
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-fade-up: fade-up 0.6s var(--ease-calm) both;
+  --animate-fade-in: fade-in 0.5s var(--ease-calm) both;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-breathe: breathe 4s ease-in-out infinite;
+  --animate-draw: draw 1.2s var(--ease-calm) both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) scale(1.02);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--dash, 320);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-cream-100);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+  }
+
+  /* Headings carry the warmth. Fraunces is optical-sized and soft. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  ::selection {
+    background-color: var(--color-clay-100);
+    color: var(--color-clay-700);
+  }
+
+  /* Focus rings: visible, but in the brand's warm register. */
+  :focus-visible {
+    outline: 2px solid var(--color-clay-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Respect users who don't want motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Staggered entrances — used on dashboard card grids. */
+  .stagger > * {
+    animation: fade-up 0.6s var(--ease-calm) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.08s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.14s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.2s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.26s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.32s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.38s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.44s; }
+
+  /* Hide scrollbars on horizontal rails without losing scroll. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Soft organic background wash used behind hero areas. */
+  .aurora {
+    background-image:
+      radial-gradient(60% 55% at 12% 8%, rgba(234, 196, 104, 0.28) 0%, transparent 60%),
+      radial-gradient(55% 50% at 92% 12%, rgba(220, 169, 140, 0.3) 0%, transparent 62%),
+      radial-gradient(50% 45% at 78% 96%, rgba(168, 192, 161, 0.26) 0%, transparent 60%);
+  }
+}
