@@ -199,6 +199,14 @@ Timeline is an append-only event feed. Health Records, Care Management, Collabor
 
 Collaboration supports invitations, invitation acceptance, permission updates, care-space activity, and shared comments. Invite acceptance uses a token, adds the authenticated user as a care-space member, marks the invitation accepted, and publishes `InvitationAccepted` into timeline/audit.
 
+Role enforcement rules:
+
+- Owners and caregivers may invite family members; viewers receive `403 FORBIDDEN`.
+- Only owners may invite someone with the `owner` role.
+- Only owners may change permissions.
+- Role updates for a non-member return `404 NOT_FOUND`.
+- Demoting the last remaining owner is refused with `409 LAST_OWNER_REQUIRED`, so a care space can never be left ownerless.
+
 ## AI Care Engine
 
 - `POST /api/assistant/chat` retrieves platform context before invoking the assistant agent.

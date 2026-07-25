@@ -16,6 +16,7 @@ const token = "invitation-token-with-enough-length";
 function buildInvitationRepository(overrides: Partial<InvitationRepository> = {}): InvitationRepository {
   return {
     assertCareSpaceMember: vi.fn().mockResolvedValue(undefined),
+    getMemberRole: vi.fn().mockResolvedValue("owner"),
     create: vi.fn().mockImplementation(async (input) => ({
       id: invitationId,
       ...input,

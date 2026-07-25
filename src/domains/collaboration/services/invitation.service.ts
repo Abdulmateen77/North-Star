@@ -1,12 +1,13 @@
 import { randomBytes } from "node:crypto";
 
-import { AppError, conflict, notFound } from "@/lib/errors";
+import { AppError, conflict, forbidden, notFound } from "@/lib/errors";
 import type { DomainEventPublisher } from "@/shared/events/domain-events";
 
 import type { CreateInvitationInput, Invitation } from "../types/models";
 import type { InvitationRepository } from "../types/repositories";
 
 const DEFAULT_INVITATION_DAYS = 7;
+const ROLES_ALLOWED_TO_INVITE = new Set(["owner", "caregiver"]);
 
 export class InvitationService {
   constructor(
@@ -17,6 +18,20 @@ export class InvitationService {
 
   async invite(actorId: string, input: CreateInvitationInput): Promise<Invitation> {
     await this.invitations.assertCareSpaceMember(input.careSpaceId, actorId);
+
+    const actorRole = await this.invitations.getMemberRole(input.careSpaceId, actorId);
+    if (!actorRole) {
+      throw notFound("Care space not found.");
+    }
+
+    if (!ROLES_ALLOWED_TO_INVITE.has(actorRole)) {
+      throw forbidden("Viewers cannot invite family members.");
+    }
+
+    if (input.role === "owner" && actorRole !== "owner") {
+      throw forbidden("Only owners can invite another owner.");
+    }
+
     const expiresAt =
       input.expiresAt ??
       new Date(Date.now() + DEFAULT_INVITATION_DAYS * 24 * 60 * 60 * 1000).toISOString();

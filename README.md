@@ -104,6 +104,7 @@ Implemented foundation code includes:
 - Shared mutation rate limiting with consistent `RATE_LIMITED` API errors
 - Durable audit logging for domain events with sensitive metadata redaction
 - Cron-protected due-reminder processing for triggered/missed reminder automation
+- Role-based collaboration guards: viewer invite restrictions, owner-only role changes, and last-owner protection
 
 See `docs/backend-api.md` for the implemented API surface.
 
