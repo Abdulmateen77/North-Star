@@ -72,7 +72,25 @@ OPENAI_API_KEY=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+LOG_LEVEL=info
 ```
+
+---
+
+## Backend Foundation
+
+Implemented foundation code includes:
+
+- Supabase Bearer-token authentication for API routes
+- Zod environment and request validation
+- Structured JSON logging
+- Centralized API error handling
+- Supabase server client and OpenAI client factory
+- Repository and service layers for care space management
+- CRUD APIs for users, care spaces, and care members
+- Supabase migration for `profiles`, `care_spaces`, and `care_members`
+
+See `docs/backend-api.md` for the implemented API surface.
 
 ---
 
