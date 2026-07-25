@@ -1,0 +1,13 @@
+import { PatientAssistant } from "@/components/patient/PatientAssistant";
+import { getCareReceiver } from "@/data";
+
+export default async function PatientAssistantPage() {
+  const receiver = await getCareReceiver();
+  const firstName = receiver.fullName.split(" ")[0];
+
+  return (
+    <PatientAssistant
+      greeting={`Hello ${firstName}. You can ask me anything about your medicines, your appointments, or your exercises.\n\nI'll keep it simple, and I'll tell you when something is better asked of Amara or your doctor.`}
+    />
+  );
+}
