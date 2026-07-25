@@ -100,6 +100,7 @@ Implemented foundation code includes:
 - Family Collaboration for invitations, permissions, activity, and comments
 - AI Care Engine for context-grounded assistant answers and daily briefings
 - Notifications, Realtime gateway abstraction, Dashboard aggregation, and Analytics insights
+- Shared mutation rate limiting with consistent `RATE_LIMITED` API errors
 
 See `docs/backend-api.md` for the implemented API surface.
 

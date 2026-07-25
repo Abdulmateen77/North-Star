@@ -4,3 +4,4 @@ export * from "./ai/types";
 export * from "./events/domain-events";
 export * from "./events/event-publisher";
 export * from "./realtime/realtime-gateway";
+export * from "./security/rate-limiter";

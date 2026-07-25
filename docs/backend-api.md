@@ -31,6 +31,13 @@ npm run build
 
 API routes expect an access token in the HTTP `Authorization` header using the Bearer scheme.
 
+## Security controls
+
+- Non-GET API requests are protected by a shared in-memory rate limiter through `withApiHandler`.
+- The default mutation limit is 120 requests per minute per client/method/path.
+- Routes can override the limiter by passing `rateLimit` options to `withApiHandler`.
+- Rate limit failures return a consistent JSON error with status `429` and code `RATE_LIMITED`.
+
 ## Implemented API routes
 
 - `GET /api/health`
