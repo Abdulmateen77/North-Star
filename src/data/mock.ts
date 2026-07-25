@@ -62,7 +62,7 @@ export const caregivers: CarePerson[] = [
     relationship: "Son",
     role: "caregiver",
     avatarUrl: null,
-    accent: "sage",
+    accent: "olive",
   },
   {
     id: "person-ruth",
@@ -71,7 +71,7 @@ export const caregivers: CarePerson[] = [
     relationship: "Sister",
     role: "viewer",
     avatarUrl: null,
-    accent: "plum",
+    accent: "peach",
   },
 ];
 

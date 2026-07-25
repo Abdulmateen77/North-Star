@@ -14,9 +14,9 @@ const toneStyles: Record<
   { card: string; chip: string; metric: string; label: string }
 > = {
   positive: {
-    card: "bg-sage-50 border-sage-100",
-    chip: "bg-sage-100 text-sage-600",
-    metric: "text-sage-600",
+    card: "bg-olive-50 border-olive-100",
+    chip: "bg-olive-100 text-olive-700",
+    metric: "text-olive-700",
     label: "Going well",
   },
   attention: {
@@ -26,9 +26,9 @@ const toneStyles: Record<
     label: "Worth a look",
   },
   neutral: {
-    card: "bg-white border-sand-300/60",
-    chip: "bg-cream-200 text-ink-600",
-    metric: "text-ink-900",
+    card: "bg-white border-bone-300/60",
+    chip: "bg-bone-200 text-olive-600",
+    metric: "text-olive-900",
     label: "Noted",
   },
 };
@@ -54,23 +54,23 @@ export default async function InsightsPage() {
       />
 
       {/* --- Weekly summary --------------------------------------------------- */}
-      <Card tone="plum" className="animate-fade-up mt-8 p-6 sm:p-8">
+      <Card tone="ai" className="animate-fade-up mt-8 p-6 sm:p-8">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-2xl bg-plum-100 text-plum-500">
+          <span className="grid size-9 place-items-center rounded-2xl bg-gold-100 text-gold-500">
             <StarMark size={17} />
           </span>
           <div>
-            <p className="text-sm font-medium text-ink-900">This week in summary</p>
-            <p className="text-xs text-ink-400">19–25 July</p>
+            <p className="text-sm font-medium text-olive-900">This week in summary</p>
+            <p className="text-xs text-olive-400">19–25 July</p>
           </div>
         </div>
 
-        <p className="mt-5 max-w-3xl text-lg leading-relaxed text-pretty text-ink-800">
+        <p className="mt-5 max-w-3xl text-lg leading-relaxed text-pretty text-olive-800">
           Margaret has had a good week. Her blood tests came back better than April&apos;s, her
           blood pressure has settled since the Ramipril change, and David logged her walking
           to the gate without the frame — a first since the operation.
         </p>
-        <p className="mt-3 max-w-3xl leading-relaxed text-pretty text-ink-600">
+        <p className="mt-3 max-w-3xl leading-relaxed text-pretty text-olive-600">
           Two things need the family: the six-week orthopaedic follow-up still isn&apos;t booked,
           and her Ramipril runs out in nine days.
         </p>
@@ -79,7 +79,7 @@ export default async function InsightsPage() {
       {/* --- Needs attention -------------------------------------------------- */}
       {attention.length > 0 ? (
         <section className="mt-10">
-          <h2 className="flex items-center gap-2 text-xl text-ink-900">
+          <h2 className="flex items-center gap-2 text-xl text-olive-900">
             <AlertCircle size={19} className="text-clay-500" />
             Needs attention
           </h2>
@@ -93,8 +93,8 @@ export default async function InsightsPage() {
 
       {/* --- Trends ----------------------------------------------------------- */}
       <section className="mt-10">
-        <h2 className="text-xl text-ink-900">Care trends</h2>
-        <p className="mt-1.5 text-sm text-ink-600">Two weeks of readings, at a glance.</p>
+        <h2 className="text-xl text-olive-900">Care trends</h2>
+        <p className="mt-1.5 text-sm text-olive-600">Two weeks of readings, at a glance.</p>
 
         <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
           {metrics.map((metric) => {
@@ -127,7 +127,7 @@ export default async function InsightsPage() {
                   >
                     {metric.value}
                     {metric.unit ? (
-                      <span className="ml-1.5 text-base font-normal text-ink-400">
+                      <span className="ml-1.5 text-base font-normal text-olive-400">
                         {metric.unit}
                       </span>
                     ) : null}
@@ -135,10 +135,10 @@ export default async function InsightsPage() {
                   <div
                     className={cn(
                       metric.tone === "positive"
-                        ? "text-sage-500"
+                        ? "text-olive-500"
                         : metric.tone === "attention"
                           ? "text-clay-500"
-                          : "text-plum-400",
+                          : "text-gold-500",
                     )}
                   >
                     <Sparkline series={metric.series} width={170} height={48} />
@@ -152,7 +152,7 @@ export default async function InsightsPage() {
 
       {/* --- Everything else -------------------------------------------------- */}
       <section className="mt-10">
-        <h2 className="text-xl text-ink-900">Other observations</h2>
+        <h2 className="text-xl text-olive-900">Other observations</h2>
         <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
           {rest.map((insight) => (
             <InsightCard key={insight.id} insight={insight} />
@@ -183,14 +183,14 @@ function InsightCard({ insight }: { insight: Insight }) {
               {insight.metric}
             </p>
             {insight.metricLabel ? (
-              <p className="mt-1 text-xs text-ink-400">{insight.metricLabel}</p>
+              <p className="mt-1 text-xs text-olive-400">{insight.metricLabel}</p>
             ) : null}
           </div>
         ) : null}
       </div>
 
-      <h3 className="mt-3.5 text-lg text-ink-900">{insight.title}</h3>
-      <p className="mt-1.5 leading-relaxed text-pretty text-ink-600">{insight.body}</p>
+      <h3 className="mt-3.5 text-lg text-olive-900">{insight.title}</h3>
+      <p className="mt-1.5 leading-relaxed text-pretty text-olive-600">{insight.body}</p>
 
       {insight.href ? (
         <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-clay-600">

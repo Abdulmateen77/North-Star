@@ -2,15 +2,16 @@ import type { ElementType, HTMLAttributes, ReactNode } from "react";
 
 import { cn } from "./cn";
 
-type CardTone = "plain" | "sand" | "clay" | "sage" | "gold" | "plum";
+type CardTone = "plain" | "bone" | "clay" | "olive" | "gold" | "ai";
 
 const toneStyles: Record<CardTone, string> = {
-  plain: "bg-white border-sand-300/60",
-  sand: "bg-cream-200 border-sand-300/70",
+  plain: "bg-white border-bone-300/60",
+  bone: "bg-bone-200 border-bone-300/70",
   clay: "bg-clay-50 border-clay-100",
-  sage: "bg-sage-50 border-sage-100",
+  olive: "bg-olive-50 border-olive-100",
   gold: "bg-gold-50 border-gold-100",
-  plum: "bg-plum-50 border-plum-100",
+  /** The assistant's surface — the brand's gradient mesh rather than a flat fill. */
+  ai: "mesh-rise border-gold-200/70",
 };
 
 interface CardProps extends HTMLAttributes<HTMLElement> {
@@ -59,8 +60,8 @@ export function CardHeader({
   return (
     <div className={cn("flex items-start justify-between gap-4", className)}>
       <div className="min-w-0">
-        <h3 className="text-lg text-ink-900">{title}</h3>
-        {subtitle ? <p className="mt-1 text-sm text-ink-600">{subtitle}</p> : null}
+        <h3 className="text-lg text-olive-900">{title}</h3>
+        {subtitle ? <p className="mt-1 text-sm text-olive-600">{subtitle}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>

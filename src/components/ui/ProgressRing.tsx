@@ -9,7 +9,7 @@ export function ProgressRing({
   size = 128,
   stroke = 10,
   className,
-  trackClassName = "text-sand-300/70",
+  trackClassName = "text-bone-300/70",
   barClassName = "text-clay-500",
   children,
 }: {

@@ -59,7 +59,7 @@ export function CaregiverShell({
   return (
     <div className="min-h-dvh lg:flex">
       {/* --- Desktop sidebar ------------------------------------------------ */}
-      <aside className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col border-r border-sand-300/50 bg-cream-50/80 px-5 py-7 backdrop-blur lg:flex">
+      <aside className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col border-r border-bone-300/50 bg-bone-50/80 px-5 py-7 backdrop-blur lg:flex">
         <Link href="/" className="px-2">
           <Logo />
         </Link>
@@ -72,11 +72,11 @@ export function CaregiverShell({
           ))}
         </nav>
 
-        <div className="mt-6 flex items-center gap-3 rounded-card border border-sand-300/50 bg-white/70 p-3">
+        <div className="mt-6 flex items-center gap-3 rounded-card border border-bone-300/50 bg-white/70 p-3">
           <Avatar initials={user.initials} accent={user.accent} size="md" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-ink-900">{user.fullName}</p>
-            <p className="truncate text-xs text-ink-400">
+            <p className="truncate text-sm font-medium text-olive-900">{user.fullName}</p>
+            <p className="truncate text-xs text-olive-400">
               {user.relationship} · Primary caregiver
             </p>
           </div>
@@ -84,14 +84,14 @@ export function CaregiverShell({
       </aside>
 
       {/* --- Mobile top bar ------------------------------------------------- */}
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-sand-300/50 bg-cream-100/90 px-4 py-3 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-bone-300/50 bg-bone-100/90 px-4 py-3 backdrop-blur lg:hidden">
         <Link href="/">
           <Logo />
         </Link>
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          className="grid size-10 place-items-center rounded-full text-ink-600 transition hover:bg-cream-200"
+          className="grid size-10 place-items-center rounded-full text-olive-600 transition hover:bg-bone-200"
           aria-label="Open navigation"
         >
           <Menu size={20} />
@@ -105,15 +105,15 @@ export function CaregiverShell({
             type="button"
             aria-label="Close navigation"
             onClick={() => setDrawerOpen(false)}
-            className="animate-fade-in absolute inset-0 bg-ink-900/25 backdrop-blur-sm"
+            className="animate-fade-in absolute inset-0 bg-olive-900/25 backdrop-blur-sm"
           />
-          <div className="absolute inset-y-0 right-0 flex w-[19rem] max-w-[85vw] flex-col bg-cream-50 px-5 py-6 shadow-lift">
+          <div className="absolute inset-y-0 right-0 flex w-[19rem] max-w-[85vw] flex-col bg-bone-50 px-5 py-6 shadow-lift">
             <div className="flex items-center justify-between">
               <Logo showWordmark={false} />
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
-                className="grid size-10 place-items-center rounded-full text-ink-600 transition hover:bg-cream-200"
+                className="grid size-10 place-items-center rounded-full text-olive-600 transition hover:bg-bone-200"
                 aria-label="Close navigation"
               >
                 <X size={19} />
@@ -128,11 +128,11 @@ export function CaregiverShell({
               ))}
             </nav>
 
-            <div className="flex items-center gap-3 border-t border-sand-300/60 pt-4">
+            <div className="flex items-center gap-3 border-t border-bone-300/60 pt-4">
               <Avatar initials={user.initials} accent={user.accent} size="md" />
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-ink-900">{user.fullName}</p>
-                <p className="truncate text-xs text-ink-400">{user.relationship}</p>
+                <p className="truncate text-sm font-medium text-olive-900">{user.fullName}</p>
+                <p className="truncate text-xs text-olive-400">{user.relationship}</p>
               </div>
             </div>
           </div>
@@ -167,10 +167,10 @@ function NavLink({
         "flex items-center gap-3 rounded-pill px-3.5 py-2.5 text-sm font-medium transition duration-200",
         active
           ? "bg-clay-500 text-white shadow-soft"
-          : "text-ink-600 hover:bg-cream-200 hover:text-ink-900",
+          : "text-olive-600 hover:bg-bone-200 hover:text-olive-900",
       )}
     >
-      <Icon size={18} className={active ? "text-gold-100" : "text-ink-400"} />
+      <Icon size={18} className={active ? "text-gold-100" : "text-olive-400"} />
       {label}
     </Link>
   );
@@ -194,13 +194,13 @@ function CareReceiverCard({
       <div className="flex items-center gap-3">
         <Avatar initials={receiver.initials} accent={receiver.accent} size="md" />
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-ink-900">{receiver.fullName}</p>
-          <p className="truncate text-xs text-ink-600">
+          <p className="truncate text-sm font-medium text-olive-900">{receiver.fullName}</p>
+          <p className="truncate text-xs text-olive-600">
             {receiver.relationship} · {receiver.age}
           </p>
         </div>
       </div>
-      <p className="mt-2.5 text-xs leading-relaxed text-ink-600">{receiver.situation}</p>
+      <p className="mt-2.5 text-xs leading-relaxed text-olive-600">{receiver.situation}</p>
     </div>
   );
 }

@@ -1,38 +1,45 @@
 "use client";
 
-import { Check, Clock, Footprints, Pill, Sun } from "lucide-react";
+import { Check, ChevronRight, Clock, Footprints, MapPin, Pill, Sun } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { ProgressRing } from "@/components/ui/ProgressRing";
+import { Emphasis } from "@/components/ui/Emphasis";
 import { cn } from "@/components/ui/cn";
-import type { CareTask, MedicationDose } from "@/data/types";
+import type { Appointment, CareTask, MedicationDose } from "@/data/types";
 
 type Item = {
   id: string;
   title: string;
   detail: string;
   timeLabel: string;
-  kind: "medicine" | "movement" | "routine";
+  kind: "medicine" | "movement";
   done: boolean;
 };
 
 const kindIcons = {
   medicine: Pill,
   movement: Footprints,
-  routine: Sun,
 } as const;
 
 /**
- * Margaret's whole day on one screen. Doses and the tasks assigned to her are
- * merged into a single list so she never has to work out which section a thing
- * lives in — it's just "what's left today".
+ * Margaret's whole day on one screen.
+ *
+ * The design rule here is one decision at a time: a single large card for the
+ * next thing she needs to do, and everything else demoted to a quiet list
+ * below it. Doses and her own tasks are merged into one stream so she never
+ * has to work out which section a thing lives in.
  */
 export function TodayCompanion({
   doses,
   tasks,
+  appointment,
+  firstName,
 }: {
   doses: MedicationDose[];
   tasks: CareTask[];
+  appointment: Appointment | null;
+  firstName: string;
 }) {
   const [items, setItems] = useState<Item[]>(() => [
     ...doses.map((dose) => ({
@@ -41,7 +48,7 @@ export function TodayCompanion({
       detail:
         dose.timing === "as-needed"
           ? "Only if you need it"
-          : `Take with ${dose.timing === "morning" ? "breakfast" : dose.timing === "evening" ? "dinner" : "a glass of water"}`,
+          : `With ${dose.timing === "morning" ? "breakfast" : dose.timing === "evening" ? "dinner" : "a glass of water"}`,
       timeLabel: dose.scheduledFor,
       kind: "medicine" as const,
       done: dose.status === "taken",
@@ -59,8 +66,6 @@ export function TodayCompanion({
   const doneCount = items.filter((item) => item.done).length;
   const remaining = items.length - doneCount;
 
-  // The single next action is lifted out; everything else follows with the
-  // outstanding items first so finished ones settle to the bottom.
   const { next, rest } = useMemo(() => {
     const pending = items.filter((item) => !item.done);
     const nextItem = pending[0] ?? null;
@@ -80,127 +85,177 @@ export function TodayCompanion({
 
   return (
     <>
-      {/* --- Progress --------------------------------------------------------- */}
-      <section className="animate-fade-up rounded-panel border border-gold-100 bg-gold-50/70 p-6">
-        <div className="flex items-center gap-5">
-          <ProgressRing
-            value={items.length === 0 ? 1 : doneCount / items.length}
-            size={104}
-            stroke={9}
-            barClassName="text-clay-500"
-            trackClassName="text-gold-100"
-          >
-            <p className="font-display text-2xl leading-none font-semibold text-ink-900">
-              {doneCount}
-              <span className="text-ink-400">/{items.length}</span>
-            </p>
-          </ProgressRing>
+      {/* --- Where she's up to. A sentence, not a dashboard. ------------------ */}
+      <section className="animate-fade-up">
+        <h1 className="text-[2rem] leading-[1.15] font-bold tracking-tight text-olive-900">
+          {remaining === 0 ? (
+            <>
+              You&apos;re <Emphasis>all done</Emphasis> for today.
+            </>
+          ) : (
+            <>
+              {remaining} {remaining === 1 ? "thing" : "things"} left today.
+            </>
+          )}
+        </h1>
+        <p className="mt-2.5 text-lg leading-relaxed text-olive-600">
+          {remaining === 0
+            ? "Everything's ticked off. Have a lovely rest of your day."
+            : "Take your time. There's no rush."}
+        </p>
 
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl leading-tight text-ink-900">
-              {remaining === 0 ? "All done for today" : `${remaining} things left today`}
-            </h1>
-            <p className="mt-1.5 leading-relaxed text-ink-600">
-              {remaining === 0
-                ? "That's everything. Have a lovely rest of your day."
-                : "Take your time. Tick each one off when you've done it."}
-            </p>
-          </div>
+        {/* A row of dots reads at a glance; a percentage does not. */}
+        <div className="mt-5 flex items-center gap-2">
+          {items.map((item) => (
+            <span
+              key={item.id}
+              className={cn(
+                "h-2.5 flex-1 rounded-pill transition duration-500",
+                item.done ? "bg-olive-500" : "bg-bone-300",
+              )}
+            />
+          ))}
         </div>
       </section>
 
-      {/* --- The next thing --------------------------------------------------- */}
+      {/* --- The one thing to do next ----------------------------------------- */}
       {next !== null ? (
-        <section className="animate-fade-up mt-6" style={{ animationDelay: "0.08s" }}>
-          <h2 className="px-1 text-sm font-medium tracking-wide text-ink-400 uppercase">
-            Next up
-          </h2>
-          <ItemRow item={next} onToggle={() => toggle(next.id)} emphasised />
+        <section className="animate-fade-up mt-8" style={{ animationDelay: "0.08s" }}>
+          <NextCard item={next} onDone={() => toggle(next.id)} />
         </section>
       ) : null}
 
-      {/* --- Everything else -------------------------------------------------- */}
-      <section className="animate-fade-up mt-7" style={{ animationDelay: "0.14s" }}>
-        <h2 className="px-1 text-sm font-medium tracking-wide text-ink-400 uppercase">
-          The rest of today
-        </h2>
-        <ul className="mt-3 space-y-3">
-          {rest.map((item) => (
-            <ItemRow key={item.id} item={item} onToggle={() => toggle(item.id)} />
-          ))}
-        </ul>
-      </section>
+      {/* --- Today's appointment, so she never has to go looking --------------- */}
+      {appointment !== null ? (
+        <section
+          className="animate-fade-up mt-6 rounded-panel border border-bone-300/60 bg-white p-5"
+          style={{ animationDelay: "0.12s" }}
+        >
+          <p className="text-sm font-medium tracking-wide text-olive-400 uppercase">
+            Coming up
+          </p>
+          <p className="mt-2 text-lg leading-snug font-semibold text-olive-900">
+            {appointment.title}
+          </p>
+          <p className="mt-2 flex items-center gap-2 text-olive-600">
+            <Clock size={16} className="shrink-0 text-olive-400" />
+            {appointment.dateLabel} at {appointment.timeLabel}
+          </p>
+          <p className="mt-1.5 flex items-start gap-2 text-olive-600">
+            <MapPin size={16} className="mt-0.5 shrink-0 text-olive-400" />
+            {appointment.location}
+          </p>
+          {appointment.transport !== null ? (
+            <p className="mt-3.5 rounded-2xl bg-olive-50 px-4 py-3 text-olive-700">
+              {appointment.transport}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {/* --- Everything else, quiet ------------------------------------------- */}
+      {rest.length > 0 ? (
+        <section className="animate-fade-up mt-8" style={{ animationDelay: "0.16s" }}>
+          <h2 className="px-1 text-sm font-medium tracking-wide text-olive-400 uppercase">
+            The rest of today
+          </h2>
+          <ul className="mt-3 space-y-2.5">
+            {rest.map((item) => (
+              <QuietRow key={item.id} item={item} onToggle={() => toggle(item.id)} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <Link
+        href="/patient/reminders"
+        className="mt-8 flex items-center justify-between rounded-panel px-1 py-3 text-olive-600 transition hover:text-olive-900"
+      >
+        <span>See all your reminders</span>
+        <ChevronRight size={18} />
+      </Link>
     </>
   );
 }
 
-function ItemRow({
-  item,
-  onToggle,
-  emphasised = false,
-}: {
-  item: Item;
-  onToggle: () => void;
-  emphasised?: boolean;
-}) {
+/**
+ * The hero card. One tap, one outcome — no secondary controls, and the tap
+ * target is the whole card rather than a small checkbox.
+ */
+function NextCard({ item, onDone }: { item: Item; onDone: () => void }) {
   const Icon = kindIcons[item.kind];
 
   return (
-    <li className={cn("list-none", emphasised && "mt-3")}>
+    <button
+      type="button"
+      onClick={onDone}
+      className="mesh-bloom w-full overflow-hidden rounded-blob border border-peach-200/70 p-7 text-left shadow-lift transition duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.99]"
+    >
+      <span className="flex items-center gap-2 text-sm font-semibold tracking-wide text-clay-700 uppercase">
+        <Clock size={15} />
+        {item.timeLabel}
+      </span>
+
+      <span className="mt-4 flex items-start gap-4">
+        <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-olive-900/85 text-gold-200">
+          <Icon size={26} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-2xl leading-tight font-bold tracking-tight text-olive-900">
+            {item.title}
+          </span>
+          {item.detail !== "" ? (
+            <span className="mt-1 block text-lg leading-relaxed text-olive-700">
+              {item.detail}
+            </span>
+          ) : null}
+        </span>
+      </span>
+
+      <span className="mt-6 flex min-h-14 items-center justify-center gap-2.5 rounded-pill bg-olive-900 px-6 text-lg font-semibold text-bone-50">
+        <Check size={20} strokeWidth={3} />
+        I&apos;ve done this
+      </span>
+    </button>
+  );
+}
+
+/** A completed or later item. Deliberately low-contrast so it doesn't compete. */
+function QuietRow({ item, onToggle }: { item: Item; onToggle: () => void }) {
+  const Icon = kindIcons[item.kind];
+
+  return (
+    <li>
       <button
         type="button"
         onClick={onToggle}
         aria-pressed={item.done}
         className={cn(
-          "flex w-full items-center gap-4 rounded-panel border p-5 text-left transition duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.99]",
+          "flex min-h-16 w-full items-center gap-4 rounded-panel border px-5 py-4 text-left transition duration-300 active:scale-[0.99]",
           item.done
-            ? "border-sand-300/60 bg-cream-200/60"
-            : emphasised
-              ? "border-clay-100 bg-white shadow-lift"
-              : "border-sand-300/60 bg-white shadow-soft hover:border-sand-400",
+            ? "border-transparent bg-bone-200/50"
+            : "border-bone-300/60 bg-white shadow-soft",
         )}
       >
         <span
           className={cn(
-            "grid size-12 shrink-0 place-items-center rounded-2xl transition duration-300",
-            item.done
-              ? "bg-sage-500 text-white"
-              : emphasised
-                ? "bg-clay-100 text-clay-600"
-                : "bg-cream-200 text-ink-600",
+            "grid size-11 shrink-0 place-items-center rounded-2xl transition duration-300",
+            item.done ? "bg-olive-500 text-white" : "bg-bone-200 text-olive-600",
           )}
         >
-          {item.done ? <Check size={22} strokeWidth={3} /> : <Icon size={22} />}
+          {item.done ? <Check size={20} strokeWidth={3} /> : <Icon size={20} />}
         </span>
 
         <span className="min-w-0 flex-1">
           <span
             className={cn(
               "block text-lg leading-snug font-medium",
-              item.done ? "text-ink-400 line-through decoration-sand-400" : "text-ink-900",
+              item.done ? "text-olive-400 line-through decoration-bone-400" : "text-olive-900",
             )}
           >
             {item.title}
           </span>
-          {item.detail !== "" ? (
-            <span className="mt-0.5 block text-sm leading-relaxed text-ink-600">
-              {item.detail}
-            </span>
-          ) : null}
-          <span className="mt-1.5 inline-flex items-center gap-1.5 text-sm text-ink-400">
-            <Clock size={13} />
-            {item.timeLabel}
-          </span>
-        </span>
-
-        <span
-          className={cn(
-            "grid size-8 shrink-0 place-items-center rounded-full border-2 transition duration-300",
-            item.done ? "border-sage-500 bg-sage-500 text-white" : "border-sand-400",
-          )}
-          aria-hidden="true"
-        >
-          {item.done ? <Check size={16} strokeWidth={3} /> : null}
+          <span className="mt-0.5 block text-olive-500">{item.timeLabel}</span>
         </span>
       </button>
     </li>

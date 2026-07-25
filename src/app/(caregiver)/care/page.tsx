@@ -1,41 +1,21 @@
 import { CarePlanView } from "@/components/caregiver/CarePlanView";
 import { PageBody, PageHeader } from "@/components/caregiver/PageHeader";
-import {
-  getAppointments,
-  getCareReceiver,
-  getCaregivers,
-  getCareTasks,
-  getMedications,
-  getReminders,
-} from "@/data";
+import { SetupButton } from "@/components/caregiver/SetupButton";
 
-export default async function CarePlanPage() {
-  const [tasks, medications, appointments, reminders, caregivers, receiver] = await Promise.all([
-    getCareTasks(),
-    getMedications(),
-    getAppointments(),
-    getReminders(),
-    getCaregivers(),
-    getCareReceiver(),
-  ]);
-
-  // Margaret picks up tasks too, so she belongs in the assignee list.
-  const people = [...caregivers, receiver];
-
+/**
+ * The care plan reads everything from `CareProvider` (set up in the caregiver
+ * layout), so anything added from another screen is already here.
+ */
+export default function CarePlanPage() {
   return (
     <PageBody>
       <PageHeader
         eyebrow="Care plan"
         title="Everything that needs doing"
         description="Tasks the family is sharing, the medicines Margaret takes, and what's coming up."
+        action={<SetupButton kind="task" label="Set something up" />}
       />
-      <CarePlanView
-        tasks={tasks}
-        medications={medications}
-        appointments={appointments}
-        reminders={reminders}
-        people={people}
-      />
+      <CarePlanView />
     </PageBody>
   );
 }

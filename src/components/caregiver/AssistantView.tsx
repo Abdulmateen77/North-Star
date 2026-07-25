@@ -167,7 +167,7 @@ export function AssistantView({
       </div>
 
       {/* --- Composer --------------------------------------------------------- */}
-      <div className="sticky bottom-0 -mx-5 bg-gradient-to-t from-cream-100 via-cream-100 to-transparent px-5 pt-6 pb-5 sm:-mx-8 sm:px-8">
+      <div className="sticky bottom-0 -mx-5 bg-gradient-to-t from-bone-100 via-bone-100 to-transparent px-5 pt-6 pb-5 sm:-mx-8 sm:px-8">
         {messages.length <= 1 ? (
           <div className="no-scrollbar mb-3 flex gap-2 overflow-x-auto">
             {suggestions.map((suggestion) => (
@@ -175,7 +175,7 @@ export function AssistantView({
                 key={suggestion}
                 type="button"
                 onClick={() => send(suggestion)}
-                className="shrink-0 rounded-pill border border-sand-300/70 bg-white px-4 py-2 text-sm text-ink-600 transition duration-200 hover:-translate-y-0.5 hover:border-clay-300 hover:text-clay-700"
+                className="shrink-0 rounded-pill border border-bone-300/70 bg-white px-4 py-2 text-sm text-olive-600 transition duration-200 hover:-translate-y-0.5 hover:border-clay-300 hover:text-clay-700"
               >
                 {suggestion}
               </button>
@@ -188,7 +188,7 @@ export function AssistantView({
             event.preventDefault();
             send(draft);
           }}
-          className="flex items-end gap-2 rounded-panel border border-sand-300/70 bg-white p-2 shadow-soft focus-within:border-clay-300"
+          className="flex items-end gap-2 rounded-panel border border-bone-300/70 bg-white p-2 shadow-soft focus-within:border-clay-300"
         >
           <textarea
             value={draft}
@@ -202,7 +202,7 @@ export function AssistantView({
             rows={1}
             placeholder="Ask anything about Margaret's care…"
             aria-label="Ask the assistant"
-            className="max-h-40 min-h-11 flex-1 resize-none bg-transparent px-3.5 py-2.5 text-ink-900 placeholder:text-ink-400 focus:outline-none"
+            className="max-h-40 min-h-11 flex-1 resize-none bg-transparent px-3.5 py-2.5 text-olive-900 placeholder:text-olive-400 focus:outline-none"
           />
           <button
             type="submit"
@@ -214,7 +214,7 @@ export function AssistantView({
           </button>
         </form>
 
-        <p className="mt-2.5 text-center text-xs text-ink-400">
+        <p className="mt-2.5 text-center text-xs text-olive-400">
           North Star helps you understand Margaret&apos;s records. It isn&apos;t medical advice —
           for anything urgent, call your GP or NHS 111.
         </p>
@@ -228,33 +228,33 @@ export function AssistantView({
 function AssistantMessage({ message }: { message: ChatMessage }) {
   return (
     <div className="animate-fade-up flex gap-3.5">
-      <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-plum-100 text-plum-500">
+      <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-olive-900 text-gold-200">
         <StarMark size={17} />
       </span>
 
       <div className="min-w-0 flex-1">
-        <div className="rounded-card rounded-tl-md border border-plum-100 bg-plum-50/60 p-4 sm:p-5">
+        <div className="rounded-card rounded-tl-md border border-gold-100 bg-gold-50/60 p-4 sm:p-5">
           {message.body.split("\n\n").map((paragraph, index) => (
             <p
               key={index}
-              className={cn("leading-relaxed text-pretty text-ink-800", index > 0 && "mt-3")}
+              className={cn("leading-relaxed text-pretty text-olive-800", index > 0 && "mt-3")}
             >
               {paragraph}
             </p>
           ))}
 
           {message.citations.length > 0 ? (
-            <div className="mt-4 border-t border-plum-100 pt-3.5">
-              <p className="text-[0.68rem] font-medium tracking-wide text-ink-400 uppercase">
+            <div className="mt-4 border-t border-gold-100 pt-3.5">
+              <p className="text-[0.68rem] font-medium tracking-wide text-olive-400 uppercase">
                 Based on
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {message.citations.map((citation) => (
                   <span
                     key={citation.label}
-                    className="inline-flex items-center gap-1.5 rounded-pill border border-plum-100 bg-white/80 px-2.5 py-1 text-xs text-ink-600"
+                    className="inline-flex items-center gap-1.5 rounded-pill border border-gold-100 bg-white/80 px-2.5 py-1 text-xs text-olive-600"
                   >
-                    <FileText size={11} className="text-plum-400" />
+                    <FileText size={11} className="text-gold-500" />
                     {citation.label}
                   </span>
                 ))}
@@ -271,7 +271,7 @@ function AssistantMessage({ message }: { message: ChatMessage }) {
                 <button
                   key={action.id}
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded-pill border border-sand-300/70 bg-white px-3.5 py-2 text-sm font-medium text-ink-800 transition duration-200 hover:-translate-y-0.5 hover:border-clay-300 hover:text-clay-700"
+                  className="inline-flex items-center gap-1.5 rounded-pill border border-bone-300/70 bg-white px-3.5 py-2 text-sm font-medium text-olive-800 transition duration-200 hover:-translate-y-0.5 hover:border-clay-300 hover:text-clay-700"
                 >
                   <Icon size={14} className="text-clay-500" />
                   {action.label}
@@ -281,7 +281,7 @@ function AssistantMessage({ message }: { message: ChatMessage }) {
           </div>
         ) : null}
 
-        <p className="mt-2 text-xs text-ink-400">{message.timeLabel}</p>
+        <p className="mt-2 text-xs text-olive-400">{message.timeLabel}</p>
       </div>
     </div>
   );
@@ -294,7 +294,7 @@ function UserMessage({ message, user }: { message: ChatMessage; user: CarePerson
         <div className="rounded-card rounded-tr-md bg-clay-500 px-4 py-3 text-white sm:px-5">
           <p className="leading-relaxed text-pretty">{message.body}</p>
         </div>
-        <p className="mt-2 text-right text-xs text-ink-400">{message.timeLabel}</p>
+        <p className="mt-2 text-right text-xs text-olive-400">{message.timeLabel}</p>
       </div>
       <Avatar initials={user.initials} accent={user.accent} size="sm" className="mt-0.5" />
     </div>
@@ -304,18 +304,18 @@ function UserMessage({ message, user }: { message: ChatMessage; user: CarePerson
 function ThinkingBubble() {
   return (
     <div className="animate-fade-in flex gap-3.5">
-      <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-plum-100 text-plum-500">
+      <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-olive-900 text-gold-200">
         <StarMark size={17} />
       </span>
-      <div className="flex items-center gap-1.5 rounded-card rounded-tl-md border border-plum-100 bg-plum-50/60 px-5 py-4">
+      <div className="flex items-center gap-1.5 rounded-card rounded-tl-md border border-gold-100 bg-gold-50/60 px-5 py-4">
         {[0, 1, 2].map((index) => (
           <span
             key={index}
-            className="animate-breathe size-2 rounded-full bg-plum-400"
+            className="animate-breathe size-2 rounded-full bg-gold-500"
             style={{ animationDelay: `${index * 0.18}s`, animationDuration: "1.2s" }}
           />
         ))}
-        <span className="ml-1.5 text-sm text-ink-600">Reading Margaret&apos;s records…</span>
+        <span className="ml-1.5 text-sm text-olive-600">Reading Margaret&apos;s records…</span>
       </div>
     </div>
   );

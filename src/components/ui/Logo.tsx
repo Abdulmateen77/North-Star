@@ -45,7 +45,7 @@ export function Logo({
         <span
           className={cn(
             "font-display text-[1.35rem] leading-none font-semibold tracking-tight",
-            tone === "ink" ? "text-ink-900" : "text-white",
+            tone === "ink" ? "text-olive-900" : "text-white",
           )}
         >
           North Star

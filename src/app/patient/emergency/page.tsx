@@ -17,16 +17,16 @@ export default async function PatientEmergencyPage() {
     <>
       <Link
         href="/patient"
-        className="animate-fade-up inline-flex items-center gap-2 text-ink-600 transition hover:text-ink-900"
+        className="animate-fade-up inline-flex items-center gap-2 text-olive-600 transition hover:text-olive-900"
       >
         <ArrowLeft size={18} />
         Back to today
       </Link>
 
-      <h1 className="animate-fade-up mt-5 text-3xl leading-tight text-ink-900">
+      <h1 className="animate-fade-up mt-5 text-3xl leading-tight text-olive-900">
         Getting help
       </h1>
-      <p className="animate-fade-up mt-2 leading-relaxed text-ink-600">
+      <p className="animate-fade-up mt-2 leading-relaxed text-olive-600">
         If something feels wrong, call someone. It&apos;s never a bother.
       </p>
 
@@ -42,7 +42,7 @@ export default async function PatientEmergencyPage() {
           <span className="block text-2xl leading-tight font-semibold text-rose-500">
             Call 999
           </span>
-          <span className="mt-0.5 block leading-relaxed text-ink-600">
+          <span className="mt-0.5 block leading-relaxed text-olive-600">
             If you&apos;ve fallen, can&apos;t breathe, or have chest pain
           </span>
         </span>
@@ -50,7 +50,7 @@ export default async function PatientEmergencyPage() {
 
       {/* --- Primary contact --------------------------------------------------- */}
       <section className="animate-fade-up mt-7">
-        <h2 className="px-1 text-sm font-medium tracking-wide text-ink-400 uppercase">
+        <h2 className="px-1 text-sm font-medium tracking-wide text-olive-400 uppercase">
           Call your family
         </h2>
 
@@ -74,25 +74,25 @@ export default async function PatientEmergencyPage() {
             <li key={contact.id}>
               <a
                 href={`tel:${contact.phone.replace(/\s/g, "")}`}
-                className="flex items-center gap-4 rounded-panel border border-sand-300/60 bg-white p-5 shadow-soft transition duration-200 hover:border-clay-300 active:scale-[0.99]"
+                className="flex items-center gap-4 rounded-panel border border-bone-300/60 bg-white p-5 shadow-soft transition duration-200 hover:border-clay-300 active:scale-[0.99]"
               >
                 <span
                   className={cn(
                     "grid size-12 shrink-0 place-items-center rounded-2xl",
                     contact.relationship === "GP practice"
-                      ? "bg-sage-100 text-sage-600"
+                      ? "bg-olive-100 text-olive-700"
                       : contact.relationship.includes("advice")
-                        ? "bg-plum-100 text-plum-500"
+                        ? "bg-gold-100 text-gold-500"
                         : "bg-clay-50 text-clay-500",
                   )}
                 >
                   <Phone size={22} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-lg leading-snug font-medium text-ink-900">
+                  <span className="block text-lg leading-snug font-medium text-olive-900">
                     {contact.name}
                   </span>
-                  <span className="block text-sm text-ink-600">
+                  <span className="block text-sm text-olive-600">
                     {contact.relationship} · {contact.phone}
                   </span>
                 </span>
@@ -104,11 +104,11 @@ export default async function PatientEmergencyPage() {
 
       {/* --- Medical profile ---------------------------------------------------- */}
       <section className="mt-9">
-        <h2 className="px-1 text-sm font-medium tracking-wide text-ink-400 uppercase">
+        <h2 className="px-1 text-sm font-medium tracking-wide text-olive-400 uppercase">
           Show this to a paramedic
         </h2>
 
-        <dl className="mt-3 divide-y divide-sand-300/60 rounded-panel border border-sand-300/60 bg-white px-5 shadow-soft">
+        <dl className="mt-3 divide-y divide-bone-300/60 rounded-panel border border-bone-300/60 bg-white px-5 shadow-soft">
           <Row label="Name" value={receiver.fullName} />
           <Row label="Age" value={String(receiver.age)} />
           <Row label="Conditions" value={receiver.conditions.join(", ")} />
@@ -137,11 +137,11 @@ function Row({
 }) {
   return (
     <div className="flex items-start justify-between gap-5 py-4">
-      <dt className="shrink-0 text-ink-400">{label}</dt>
+      <dt className="shrink-0 text-olive-400">{label}</dt>
       <dd
         className={cn(
           "text-right font-medium",
-          highlight ? "text-rose-500" : "text-ink-900",
+          highlight ? "text-rose-500" : "text-olive-900",
         )}
       >
         {value}

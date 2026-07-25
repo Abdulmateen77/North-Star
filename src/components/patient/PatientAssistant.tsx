@@ -95,15 +95,15 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
         {messages.map((message) =>
           message.author === "assistant" ? (
             <div key={message.id} className="animate-fade-up flex gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-plum-100 text-plum-500">
+              <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-olive-900 text-gold-200">
                 <StarMark size={18} />
               </span>
-              <div className="min-w-0 flex-1 rounded-panel rounded-tl-lg border border-plum-100 bg-plum-50/60 p-5">
+              <div className="min-w-0 flex-1 rounded-panel rounded-tl-lg border border-gold-100 bg-gold-50/60 p-5">
                 {message.body.split("\n\n").map((paragraph, index) => (
                   <p
                     key={index}
                     className={cn(
-                      "text-lg leading-relaxed text-pretty text-ink-800",
+                      "text-lg leading-relaxed text-pretty text-olive-800",
                       index > 0 && "mt-3",
                     )}
                   >
@@ -123,14 +123,14 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
 
         {thinking ? (
           <div className="animate-fade-in flex gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-plum-100 text-plum-500">
+            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-olive-900 text-gold-200">
               <StarMark size={18} />
             </span>
-            <div className="flex items-center gap-1.5 rounded-panel rounded-tl-lg border border-plum-100 bg-plum-50/60 px-5 py-4">
+            <div className="flex items-center gap-1.5 rounded-panel rounded-tl-lg border border-gold-100 bg-gold-50/60 px-5 py-4">
               {[0, 1, 2].map((index) => (
                 <span
                   key={index}
-                  className="animate-breathe size-2.5 rounded-full bg-plum-400"
+                  className="animate-breathe size-2.5 rounded-full bg-gold-500"
                   style={{ animationDelay: `${index * 0.18}s`, animationDuration: "1.2s" }}
                 />
               ))}
@@ -142,7 +142,7 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
       </div>
 
       {/* --- Composer --------------------------------------------------------- */}
-      <div className="sticky bottom-0 -mx-5 bg-gradient-to-t from-cream-100 via-cream-100 to-transparent px-5 pt-5 pb-2">
+      <div className="sticky bottom-0 -mx-5 bg-gradient-to-t from-bone-100 via-bone-100 to-transparent px-5 pt-5 pb-2">
         {messages.length === 1 ? (
           <div className="mb-3 space-y-2">
             {suggestions.map((suggestion) => (
@@ -150,7 +150,7 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
                 key={suggestion}
                 type="button"
                 onClick={() => send(suggestion)}
-                className="block w-full rounded-panel border border-sand-300/70 bg-white px-5 py-3.5 text-left text-base text-ink-800 shadow-soft transition duration-200 hover:border-clay-300 active:scale-[0.99]"
+                className="block w-full rounded-panel border border-bone-300/70 bg-white px-5 py-3.5 text-left text-base text-olive-800 shadow-soft transition duration-200 hover:border-clay-300 active:scale-[0.99]"
               >
                 {suggestion}
               </button>
@@ -163,14 +163,14 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
             event.preventDefault();
             send(draft);
           }}
-          className="flex items-center gap-2 rounded-panel border border-sand-300/70 bg-white p-2 shadow-soft focus-within:border-clay-300"
+          className="flex items-center gap-2 rounded-panel border border-bone-300/70 bg-white p-2 shadow-soft focus-within:border-clay-300"
         >
           <input
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Ask me anything…"
             aria-label="Ask the assistant"
-            className="min-h-12 flex-1 bg-transparent px-3.5 text-lg text-ink-900 placeholder:text-ink-400 focus:outline-none"
+            className="min-h-12 flex-1 bg-transparent px-3.5 text-lg text-olive-900 placeholder:text-olive-400 focus:outline-none"
           />
           <button
             type="submit"

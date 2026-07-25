@@ -9,8 +9,8 @@ type Size = "sm" | "md" | "lg";
 const variantStyles: Record<Variant, string> = {
   primary: "bg-clay-500 text-white hover:bg-clay-600 shadow-soft",
   soft: "bg-clay-50 text-clay-700 hover:bg-clay-100 border border-clay-100",
-  ghost: "text-ink-600 hover:bg-cream-200 hover:text-ink-900",
-  outline: "border border-sand-300 bg-white text-ink-800 hover:border-sand-400 hover:bg-cream-50",
+  ghost: "text-olive-600 hover:bg-bone-200 hover:text-olive-900",
+  outline: "border border-bone-300 bg-white text-olive-800 hover:border-bone-400 hover:bg-bone-50",
 };
 
 const sizeStyles: Record<Size, string> = {

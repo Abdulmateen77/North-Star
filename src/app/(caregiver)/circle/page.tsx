@@ -21,13 +21,13 @@ const roleSummary: Record<
   },
   caregiver: {
     label: "Caregiver",
-    tone: "sage",
+    tone: "olive",
     icon: Heart,
     can: "Can add tasks, upload documents and update the timeline.",
   },
   viewer: {
     label: "Family",
-    tone: "plum",
+    tone: "peach",
     icon: Eye,
     can: "Can see updates and the timeline, but can't change the care plan.",
   },
@@ -76,14 +76,14 @@ export default async function CirclePage() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <h3 className="text-lg text-ink-900">{person.fullName}</h3>
+                      <h3 className="text-lg text-olive-900">{person.fullName}</h3>
                       <Badge tone={role.tone}>
                         <RoleIcon size={11} />
                         {role.label}
                       </Badge>
                     </div>
-                    <p className="mt-0.5 text-sm text-ink-600">{person.relationship}</p>
-                    <p className="mt-2.5 text-sm leading-relaxed text-ink-600">{role.can}</p>
+                    <p className="mt-0.5 text-sm text-olive-600">{person.relationship}</p>
+                    <p className="mt-2.5 text-sm leading-relaxed text-olive-600">{role.can}</p>
                   </div>
                 </div>
               </Card>
@@ -91,14 +91,14 @@ export default async function CirclePage() {
           })}
 
           <Card
-            tone="sand"
+            tone="bone"
             className="border-dashed p-6 text-center"
           >
-            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white/70 text-ink-400">
+            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white/70 text-olive-400">
               <UserPlus size={20} />
             </span>
-            <h3 className="mt-4 text-lg text-ink-900">Add another family member</h3>
-            <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-600">
+            <h3 className="mt-4 text-lg text-olive-900">Add another family member</h3>
+            <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-olive-600">
               Invite by email and choose what they can see. You can change or remove
               access at any time.
             </p>
@@ -124,16 +124,16 @@ export default async function CirclePage() {
                 <div key={update.id} className="flex gap-3">
                   <Avatar initials={author.initials} accent={author.accent} size="sm" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-ink-900">
+                    <p className="text-sm font-medium text-olive-900">
                       {author.fullName.split(" ")[0]}
                     </p>
-                    <p className="mt-1 text-sm leading-relaxed text-pretty text-ink-600">
+                    <p className="mt-1 text-sm leading-relaxed text-pretty text-olive-600">
                       {update.body}
                     </p>
                     <div className="mt-2 flex items-center gap-2.5">
-                      <span className="text-xs text-ink-400">{update.timeLabel}</span>
+                      <span className="text-xs text-olive-400">{update.timeLabel}</span>
                       {update.acknowledgedBy.length > 0 ? (
-                        <span className="inline-flex items-center gap-1 text-xs text-ink-400">
+                        <span className="inline-flex items-center gap-1 text-xs text-olive-400">
                           <Heart size={10} className="text-clay-300" />
                           {update.acknowledgedBy.length}
                         </span>

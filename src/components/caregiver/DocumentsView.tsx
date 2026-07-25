@@ -129,20 +129,20 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
           "animate-fade-up mt-7 rounded-panel border-2 border-dashed p-9 text-center transition duration-300 sm:p-12",
           dragging
             ? "border-clay-500 bg-clay-50"
-            : "border-sand-300 bg-white/60 hover:border-sand-400",
+            : "border-bone-300 bg-white/60 hover:border-bone-400",
         )}
       >
         <span
           className={cn(
             "mx-auto grid size-16 place-items-center rounded-3xl transition duration-300",
-            dragging ? "bg-clay-100 text-clay-600" : "bg-cream-200 text-ink-400",
+            dragging ? "bg-clay-100 text-clay-600" : "bg-bone-200 text-olive-400",
           )}
         >
           <UploadCloud size={28} />
         </span>
 
-        <h2 className="mt-5 text-xl text-ink-900">Drop a letter or report here</h2>
-        <p className="mx-auto mt-2 max-w-md leading-relaxed text-pretty text-ink-600">
+        <h2 className="mt-5 text-xl text-olive-900">Drop a letter or report here</h2>
+        <p className="mx-auto mt-2 max-w-md leading-relaxed text-pretty text-olive-600">
           NHS letters, discharge summaries, test results, prescriptions. We&apos;ll read it,
           explain it in plain English, and add anything important to the timeline.
         </p>
@@ -152,7 +152,7 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
             <Paperclip size={16} />
             Choose a file
           </Button>
-          <span className="text-sm text-ink-400">PDF, JPG or PNG · up to 20MB</span>
+          <span className="text-sm text-olive-400">PDF, JPG or PNG · up to 20MB</span>
         </div>
 
         <input
@@ -189,7 +189,7 @@ function DocumentCard({ doc }: { doc: CareDocument }) {
         <span
           className={cn(
             "grid size-12 shrink-0 place-items-center rounded-2xl",
-            busy ? "bg-plum-50 text-plum-500" : "bg-cream-200 text-ink-600",
+            busy ? "bg-gold-50 text-gold-500" : "bg-bone-200 text-olive-600",
           )}
         >
           {busy ? <Loader2 size={20} className="animate-spin" /> : <FileText size={20} />}
@@ -197,16 +197,16 @@ function DocumentCard({ doc }: { doc: CareDocument }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2.5">
-            <h3 className="text-lg text-ink-900">{doc.title}</h3>
+            <h3 className="text-lg text-olive-900">{doc.title}</h3>
             {!busy ? <Badge tone="neutral">{kindLabels[doc.kind]}</Badge> : null}
           </div>
-          <p className="mt-1 text-sm text-ink-400">
+          <p className="mt-1 text-sm text-olive-400">
             {doc.source} · {doc.dateLabel} · {doc.fileSizeLabel}
           </p>
         </div>
 
         {!busy ? (
-          <Badge tone="sage" className="shrink-0">
+          <Badge tone="olive" className="shrink-0">
             <CheckCircle2 size={12} />
             Understood
           </Badge>
@@ -217,15 +217,15 @@ function DocumentCard({ doc }: { doc: CareDocument }) {
       {busy ? (
         <div className="mt-5">
           <div className="flex items-center justify-between text-sm">
-            <span className="flex items-center gap-2 text-plum-500">
+            <span className="flex items-center gap-2 text-gold-500">
               <StarMark size={13} />
               {stage.label}
             </span>
-            <span className="text-ink-400">{Math.round(doc.progress)}%</span>
+            <span className="text-olive-400">{Math.round(doc.progress)}%</span>
           </div>
-          <div className="mt-2.5 h-1.5 overflow-hidden rounded-pill bg-cream-200">
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-pill bg-bone-200">
             <div
-              className="h-full rounded-pill bg-plum-400 transition-[width] duration-300 ease-out"
+              className="h-full rounded-pill bg-gold-500 transition-[width] duration-300 ease-out"
               style={{ width: `${doc.progress}%` }}
             />
           </div>
@@ -234,31 +234,31 @@ function DocumentCard({ doc }: { doc: CareDocument }) {
 
       {/* --- AI understanding ------------------------------------------------ */}
       {doc.aiSummary ? (
-        <div className="mt-5 rounded-card border border-plum-100 bg-plum-50/60 p-4 sm:p-5">
-          <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-plum-500 uppercase">
+        <div className="mt-5 rounded-card border border-gold-100 bg-gold-50/60 p-4 sm:p-5">
+          <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-gold-500 uppercase">
             <StarMark size={12} />
             What this says
           </p>
-          <p className="mt-2.5 leading-relaxed text-pretty text-ink-800">{doc.aiSummary}</p>
+          <p className="mt-2.5 leading-relaxed text-pretty text-olive-800">{doc.aiSummary}</p>
 
           {doc.extractedFacts.length > 0 ? (
             <dl className="mt-4 flex flex-wrap gap-2">
               {doc.extractedFacts.map((fact) => (
                 <div
                   key={fact.label}
-                  className="rounded-2xl border border-plum-100 bg-white/80 px-3 py-2"
+                  className="rounded-2xl border border-gold-100 bg-white/80 px-3 py-2"
                 >
-                  <dt className="text-[0.68rem] tracking-wide text-ink-400 uppercase">
+                  <dt className="text-[0.68rem] tracking-wide text-olive-400 uppercase">
                     {fact.label}
                   </dt>
-                  <dd className="mt-0.5 text-sm font-medium text-ink-900">{fact.value}</dd>
+                  <dd className="mt-0.5 text-sm font-medium text-olive-900">{fact.value}</dd>
                 </div>
               ))}
             </dl>
           ) : null}
 
           {doc.generatedTaskIds.length > 0 ? (
-            <p className="mt-4 flex items-center gap-2 border-t border-plum-100 pt-3.5 text-sm text-plum-500">
+            <p className="mt-4 flex items-center gap-2 border-t border-gold-100 pt-3.5 text-sm text-gold-500">
               <CheckCircle2 size={14} />
               {doc.generatedTaskIds.length} task
               {doc.generatedTaskIds.length === 1 ? "" : "s"} created for the family

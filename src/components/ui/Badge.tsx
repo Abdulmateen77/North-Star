@@ -2,14 +2,16 @@ import type { ReactNode } from "react";
 
 import { cn } from "./cn";
 
-export type BadgeTone = "neutral" | "clay" | "sage" | "gold" | "plum" | "rose";
+export type BadgeTone = "neutral" | "clay" | "olive" | "gold" | "peach" | "rose";
 
 const toneStyles: Record<BadgeTone, string> = {
-  neutral: "bg-cream-200 text-ink-600 border-sand-300/70",
+  neutral: "bg-bone-200 text-olive-600 border-bone-300/70",
   clay: "bg-clay-50 text-clay-700 border-clay-100",
-  sage: "bg-sage-50 text-sage-600 border-sage-100",
-  gold: "bg-gold-50 text-gold-500 border-gold-100",
-  plum: "bg-plum-50 text-plum-500 border-plum-100",
+  /** Positive — things going well. */
+  olive: "bg-olive-50 text-olive-700 border-olive-100",
+  /** The AI voice, and anything the assistant produced. */
+  gold: "bg-gold-100 text-gold-600 border-gold-200",
+  peach: "bg-peach-50 text-peach-500 border-peach-100",
   rose: "bg-rose-50 text-rose-500 border-rose-100",
 };
 

@@ -30,6 +30,8 @@ import type {
   TaskStatus,
 } from "@/data/types";
 
+import { useCare } from "./CareProvider";
+
 type Tab = "tasks" | "medicines" | "schedule";
 
 const tabs: Array<{ id: Tab; label: string; icon: typeof ListChecks }> = [
@@ -38,24 +40,13 @@ const tabs: Array<{ id: Tab; label: string; icon: typeof ListChecks }> = [
   { id: "schedule", label: "Appointments & reminders", icon: CalendarDays },
 ];
 
-export function CarePlanView({
-  tasks: initialTasks,
-  medications,
-  appointments,
-  reminders,
-  people,
-}: {
-  tasks: CareTask[];
-  medications: Medication[];
-  appointments: Appointment[];
-  reminders: Reminder[];
-  people: CarePerson[];
-}) {
+export function CarePlanView() {
+  const { medications, appointments, reminders, people } = useCare();
   const [tab, setTab] = useState<Tab>("tasks");
 
   return (
     <>
-      <div className="no-scrollbar animate-fade-up mt-7 flex gap-2 overflow-x-auto border-b border-sand-300/60 pb-px">
+      <div className="no-scrollbar animate-fade-up mt-7 flex gap-2 overflow-x-auto border-b border-bone-300/60 pb-px">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -65,8 +56,8 @@ export function CarePlanView({
             className={cn(
               "inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition duration-200",
               tab === id
-                ? "border-clay-500 text-ink-900"
-                : "border-transparent text-ink-400 hover:text-ink-600",
+                ? "border-clay-500 text-olive-900"
+                : "border-transparent text-olive-400 hover:text-olive-600",
             )}
           >
             <Icon size={16} />
@@ -76,7 +67,7 @@ export function CarePlanView({
       </div>
 
       <div className="mt-7">
-        {tab === "tasks" ? <TaskBoard initialTasks={initialTasks} people={people} /> : null}
+        {tab === "tasks" ? <TaskBoard /> : null}
         {tab === "medicines" ? <MedicationList medications={medications} /> : null}
         {tab === "schedule" ? (
           <ScheduleView
@@ -106,14 +97,8 @@ const priorityTone: Record<TaskPriority, BadgeTone> = {
   low: "neutral",
 };
 
-function TaskBoard({
-  initialTasks,
-  people,
-}: {
-  initialTasks: CareTask[];
-  people: CarePerson[];
-}) {
-  const [tasks, setTasks] = useState(initialTasks);
+function TaskBoard() {
+  const { tasks, people, setTaskStatus, openSetup } = useCare();
   const [assigneeFilter, setAssigneeFilter] = useState<string | null>(null);
 
   const visible = useMemo(
@@ -125,19 +110,10 @@ function TaskBoard({
   );
 
   /** Click advances a task through the workflow; done cycles back to to-do. */
-  function advance(id: string) {
-    setTasks((current) =>
-      current.map((task) => {
-        if (task.id !== id) return task;
-        const next: TaskStatus =
-          task.status === "todo" ? "in-progress" : task.status === "in-progress" ? "done" : "todo";
-        return {
-          ...task,
-          status: next,
-          completedAt: next === "done" ? "Just now" : null,
-        };
-      }),
-    );
+  function advance(task: CareTask) {
+    const next: TaskStatus =
+      task.status === "todo" ? "in-progress" : task.status === "in-progress" ? "done" : "todo";
+    setTaskStatus(task.id, next);
   }
 
   const openCount = tasks.filter((t) => t.status !== "done").length;
@@ -162,7 +138,7 @@ function TaskBoard({
           ))}
         </div>
 
-        <Button size="sm" variant="soft">
+        <Button size="sm" variant="soft" onClick={() => openSetup("task")}>
           <Plus size={15} />
           New task
         </Button>
@@ -174,10 +150,10 @@ function TaskBoard({
           return (
             <div key={column.status}>
               <div className="flex items-baseline justify-between px-1">
-                <h2 className="text-base text-ink-900">{column.label}</h2>
-                <span className="text-xs text-ink-400">{columnTasks.length}</span>
+                <h2 className="text-base text-olive-900">{column.label}</h2>
+                <span className="text-xs text-olive-400">{columnTasks.length}</span>
               </div>
-              <p className="mt-0.5 px-1 text-xs text-ink-400">{column.hint}</p>
+              <p className="mt-0.5 px-1 text-xs text-olive-400">{column.hint}</p>
 
               <ul className="mt-3.5 space-y-3">
                 {columnTasks.map((task) => (
@@ -185,12 +161,12 @@ function TaskBoard({
                     key={task.id}
                     task={task}
                     person={people.find((p) => p.id === task.assigneeId) ?? null}
-                    onAdvance={() => advance(task.id)}
+                    onAdvance={() => advance(task)}
                   />
                 ))}
 
                 {columnTasks.length === 0 ? (
-                  <li className="rounded-card border border-dashed border-sand-300 px-4 py-8 text-center text-sm text-ink-400">
+                  <li className="rounded-card border border-dashed border-bone-300 px-4 py-8 text-center text-sm text-olive-400">
                     Nothing here
                   </li>
                 ) : null}
@@ -224,10 +200,10 @@ function TaskCard({
           className={cn(
             "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 transition duration-200",
             done
-              ? "border-sage-500 bg-sage-500 text-white"
+              ? "border-olive-500 bg-olive-500 text-white"
               : task.status === "in-progress"
                 ? "border-clay-500 bg-clay-100 hover:bg-clay-300"
-                : "border-sand-400 hover:border-clay-500",
+                : "border-bone-400 hover:border-clay-500",
           )}
         >
           {done ? <Check size={12} strokeWidth={3} /> : null}
@@ -239,14 +215,14 @@ function TaskCard({
         <div className="min-w-0 flex-1">
           <p
             className={cn(
-              "font-medium text-ink-900",
-              done && "text-ink-400 line-through decoration-sand-400",
+              "font-medium text-olive-900",
+              done && "text-olive-400 line-through decoration-bone-400",
             )}
           >
             {task.title}
           </p>
           {task.detail ? (
-            <p className="mt-1 text-sm leading-relaxed text-ink-600">{task.detail}</p>
+            <p className="mt-1 text-sm leading-relaxed text-olive-600">{task.detail}</p>
           ) : null}
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -256,27 +232,27 @@ function TaskCard({
                 {task.dueLabel}
               </Badge>
             ) : (
-              <Badge tone="sage">
+              <Badge tone="olive">
                 <Check size={11} />
                 {task.completedAt}
               </Badge>
             )}
             {task.generatedByAi ? (
-              <Badge tone="plum">
+              <Badge tone="gold">
                 <StarMark size={10} />
                 AI
               </Badge>
             ) : null}
           </div>
 
-          <div className="mt-3 flex items-center gap-2 border-t border-sand-300/50 pt-3">
+          <div className="mt-3 flex items-center gap-2 border-t border-bone-300/50 pt-3">
             {person ? (
               <>
                 <Avatar initials={person.initials} accent={person.accent} size="xs" />
-                <span className="text-xs text-ink-600">{person.fullName}</span>
+                <span className="text-xs text-olive-600">{person.fullName}</span>
               </>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-xs text-ink-400">
+              <span className="inline-flex items-center gap-1.5 text-xs text-olive-400">
                 <User size={12} />
                 Unassigned
               </span>
@@ -285,7 +261,7 @@ function TaskCard({
               <button
                 type="button"
                 onClick={onAdvance}
-                className="ml-auto inline-flex items-center gap-1 text-xs text-ink-400 transition hover:text-ink-600"
+                className="ml-auto inline-flex items-center gap-1 text-xs text-olive-400 transition hover:text-olive-600"
               >
                 <RotateCcw size={11} />
                 Reopen
@@ -317,7 +293,7 @@ function FilterChip({
         "inline-flex shrink-0 items-center gap-2 rounded-pill border px-3.5 py-2 text-sm font-medium transition duration-200",
         active
           ? "border-clay-500 bg-clay-500 text-white"
-          : "border-sand-300/70 bg-white text-ink-600 hover:border-sand-400",
+          : "border-bone-300/70 bg-white text-olive-600 hover:border-bone-400",
       )}
     >
       {avatar}
@@ -343,19 +319,19 @@ function MedicationList({ medications }: { medications: Medication[] }) {
                   <Pill size={19} />
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-lg text-ink-900">
+                  <h3 className="text-lg text-olive-900">
                     {med.name}{" "}
-                    <span className="font-sans text-sm font-normal text-ink-400">
+                    <span className="font-sans text-sm font-normal text-olive-400">
                       {med.dosage}
                     </span>
                   </h3>
-                  <p className="mt-0.5 text-sm text-ink-600">{med.purpose}</p>
+                  <p className="mt-0.5 text-sm text-olive-600">{med.purpose}</p>
                 </div>
               </div>
               {low ? <Badge tone="rose">{med.daysSupplyLeft} days left</Badge> : null}
             </div>
 
-            <p className="mt-4 rounded-2xl bg-cream-100 px-3.5 py-2.5 text-sm text-ink-600">
+            <p className="mt-4 rounded-2xl bg-bone-100 px-3.5 py-2.5 text-sm text-olive-600">
               {med.instruction}
             </p>
 
@@ -366,9 +342,9 @@ function MedicationList({ medications }: { medications: Medication[] }) {
               </p>
             ) : null}
 
-            <div className="mt-4 flex items-center justify-between border-t border-sand-300/50 pt-3.5">
-              <span className="text-xs text-ink-400">Prescribed by {med.prescribedBy}</span>
-              <span className="text-xs text-ink-400">{med.refillsRemaining} refills</span>
+            <div className="mt-4 flex items-center justify-between border-t border-bone-300/50 pt-3.5">
+              <span className="text-xs text-olive-400">Prescribed by {med.prescribedBy}</span>
+              <span className="text-xs text-olive-400">{med.refillsRemaining} refills</span>
             </div>
           </Card>
         );
@@ -393,7 +369,7 @@ function ScheduleView({
   return (
     <div className="grid gap-5 lg:grid-cols-2">
       <section>
-        <h2 className="text-xl text-ink-900">Upcoming appointments</h2>
+        <h2 className="text-xl text-olive-900">Upcoming appointments</h2>
         <div className="stagger mt-4 space-y-3.5">
           {appointments.map((appt) => {
             const escort = people.find((p) => p.id === appt.escortId) ?? null;
@@ -401,34 +377,34 @@ function ScheduleView({
               <Card key={appt.id} className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <h3 className="text-lg text-ink-900">{appt.title}</h3>
-                    <p className="mt-0.5 text-sm text-ink-600">{appt.clinician}</p>
+                    <h3 className="text-lg text-olive-900">{appt.title}</h3>
+                    <p className="mt-0.5 text-sm text-olive-600">{appt.clinician}</p>
                   </div>
                   <Badge tone="clay">{appt.dateLabel}</Badge>
                 </div>
 
-                <div className="mt-4 space-y-2 text-sm text-ink-600">
+                <div className="mt-4 space-y-2 text-sm text-olive-600">
                   <p className="flex items-center gap-2">
-                    <Clock size={14} className="text-ink-400" />
+                    <Clock size={14} className="text-olive-400" />
                     {appt.timeLabel}
                   </p>
                   <p className="flex items-start gap-2">
-                    <MapPin size={14} className="mt-0.5 shrink-0 text-ink-400" />
+                    <MapPin size={14} className="mt-0.5 shrink-0 text-olive-400" />
                     {appt.location}
                   </p>
                 </div>
 
                 {appt.notes ? (
-                  <p className="mt-3.5 rounded-2xl bg-cream-100 px-3.5 py-2.5 text-sm text-ink-600">
+                  <p className="mt-3.5 rounded-2xl bg-bone-100 px-3.5 py-2.5 text-sm text-olive-600">
                     {appt.notes}
                   </p>
                 ) : null}
 
-                <div className="mt-4 flex items-center gap-2 border-t border-sand-300/50 pt-3.5">
+                <div className="mt-4 flex items-center gap-2 border-t border-bone-300/50 pt-3.5">
                   {escort ? (
                     <>
                       <Avatar initials={escort.initials} accent={escort.accent} size="xs" />
-                      <span className="text-xs text-ink-600">
+                      <span className="text-xs text-olive-600">
                         {escort.fullName.split(" ")[0]} is taking her
                       </span>
                     </>
@@ -443,28 +419,28 @@ function ScheduleView({
       </section>
 
       <section>
-        <h2 className="text-xl text-ink-900">Reminders</h2>
-        <p className="mt-1 text-sm text-ink-600">
+        <h2 className="text-xl text-olive-900">Reminders</h2>
+        <p className="mt-1 text-sm text-olive-600">
           What Margaret is nudged about, and whether she confirmed.
         </p>
 
-        <Card className="stagger mt-4 divide-y divide-sand-300/50 p-2">
+        <Card className="stagger mt-4 divide-y divide-bone-300/50 p-2">
           {reminders.map((reminder) => (
             <div key={reminder.id} className="flex items-center gap-3.5 px-3.5 py-3.5">
               <span
                 className={cn(
                   "grid size-9 shrink-0 place-items-center rounded-2xl",
                   reminder.enabled
-                    ? "bg-sage-50 text-sage-500"
-                    : "bg-cream-200 text-ink-400",
+                    ? "bg-olive-50 text-olive-500"
+                    : "bg-bone-200 text-olive-400",
                 )}
               >
                 <AlarmClock size={17} />
               </span>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-ink-900">{reminder.title}</p>
-                <p className="truncate text-xs text-ink-400">
+                <p className="truncate text-sm font-medium text-olive-900">{reminder.title}</p>
+                <p className="truncate text-xs text-olive-400">
                   {reminder.timeLabel} · {reminder.repeatLabel}
                 </p>
               </div>
@@ -472,12 +448,12 @@ function ScheduleView({
               <div className="shrink-0 text-right">
                 {reminder.enabled ? (
                   reminder.lastConfirmed ? (
-                    <span className="text-xs text-sage-600">{reminder.lastConfirmed}</span>
+                    <span className="text-xs text-olive-700">{reminder.lastConfirmed}</span>
                   ) : (
-                    <span className="text-xs text-ink-400">Not yet due</span>
+                    <span className="text-xs text-olive-400">Not yet due</span>
                   )
                 ) : (
-                  <span className="text-xs text-ink-400">Paused</span>
+                  <span className="text-xs text-olive-400">Paused</span>
                 )}
               </div>
             </div>

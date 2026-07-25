@@ -8,9 +8,9 @@ import { cn } from "./cn";
  */
 const accentStyles: Record<PersonAccent, string> = {
   clay: "bg-clay-100 text-clay-700",
-  sage: "bg-sage-100 text-sage-600",
-  gold: "bg-gold-100 text-gold-500",
-  plum: "bg-plum-100 text-plum-500",
+  olive: "bg-olive-100 text-olive-700",
+  gold: "bg-gold-200 text-gold-600",
+  peach: "bg-peach-200 text-peach-500",
 };
 
 const sizeStyles = {

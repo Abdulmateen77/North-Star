@@ -20,8 +20,8 @@ export default async function PatientFamilyPage() {
 
   return (
     <>
-      <h1 className="animate-fade-up text-3xl leading-tight text-ink-900">Your family</h1>
-      <p className="animate-fade-up mt-2 leading-relaxed text-ink-600">
+      <h1 className="animate-fade-up text-3xl leading-tight text-olive-900">Your family</h1>
+      <p className="animate-fade-up mt-2 leading-relaxed text-olive-600">
         They&apos;re keeping an eye on things with you.
       </p>
 
@@ -33,15 +33,15 @@ export default async function PatientFamilyPage() {
           return (
             <li
               key={person.id}
-              className="rounded-panel border border-sand-300/60 bg-white p-5 shadow-soft"
+              className="rounded-panel border border-bone-300/60 bg-white p-5 shadow-soft"
             >
               <div className="flex items-center gap-4">
                 <Avatar initials={person.initials} accent={person.accent} size="lg" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg leading-snug font-medium text-ink-900">
+                  <p className="text-lg leading-snug font-medium text-olive-900">
                     {person.fullName}
                   </p>
-                  <p className="text-sm text-ink-600">{person.relationship}</p>
+                  <p className="text-sm text-olive-600">{person.relationship}</p>
                 </div>
               </div>
 
@@ -57,7 +57,7 @@ export default async function PatientFamilyPage() {
                 ) : null}
                 <button
                   type="button"
-                  className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-pill border border-sand-300 bg-white px-4 font-medium text-ink-800 transition hover:bg-cream-50"
+                  className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-pill border border-bone-300 bg-white px-4 font-medium text-olive-800 transition hover:bg-bone-50"
                 >
                   <MessageCircle size={18} />
                   Message
@@ -70,7 +70,7 @@ export default async function PatientFamilyPage() {
 
       {/* --- What they've been saying ----------------------------------------- */}
       <section className="mt-9">
-        <h2 className="px-1 text-sm font-medium tracking-wide text-ink-400 uppercase">
+        <h2 className="px-1 text-sm font-medium tracking-wide text-olive-400 uppercase">
           Recent updates
         </h2>
 
@@ -82,20 +82,20 @@ export default async function PatientFamilyPage() {
             return (
               <li
                 key={update.id}
-                className="rounded-panel border border-sand-300/60 bg-cream-50 p-5"
+                className="rounded-panel border border-bone-300/60 bg-bone-50 p-5"
               >
                 <div className="flex items-center gap-3">
                   <Avatar initials={author.initials} accent={author.accent} size="sm" />
                   <div>
-                    <p className="font-medium text-ink-900">{author.fullName.split(" ")[0]}</p>
-                    <p className="text-xs text-ink-400">{update.timeLabel}</p>
+                    <p className="font-medium text-olive-900">{author.fullName.split(" ")[0]}</p>
+                    <p className="text-xs text-olive-400">{update.timeLabel}</p>
                   </div>
                 </div>
 
-                <p className="mt-3 leading-relaxed text-pretty text-ink-800">{update.body}</p>
+                <p className="mt-3 leading-relaxed text-pretty text-olive-800">{update.body}</p>
 
                 {update.acknowledgedBy.length > 0 ? (
-                  <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-ink-400">
+                  <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-olive-400">
                     <Heart size={13} className="text-clay-300" />
                     {update.acknowledgedBy.length} in the family saw this
                   </p>

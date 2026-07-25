@@ -30,7 +30,7 @@ export interface CarePerson {
   accent: PersonAccent;
 }
 
-export type PersonAccent = "clay" | "sage" | "gold" | "plum";
+export type PersonAccent = "clay" | "olive" | "gold" | "peach";
 
 /** The person being cared for. */
 export interface CareReceiver extends CarePerson {
