@@ -117,10 +117,10 @@ export function Logo({
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <span
         className={cn(
-          "grid size-9 place-items-center rounded-[0.9rem] shadow-soft overflow-hidden shrink-0 bg-black p-0.5 border border-white/10",
+          "grid size-9 place-items-center rounded-[0.9rem] shadow-soft overflow-hidden shrink-0 bg-clay-500/10 p-1 border border-clay-500/20 backdrop-blur-sm",
         )}
       >
-        <StarMark size={28} useImage />
+        <StarMark size={26} useImage />
       </span>
       {showWordmark ? (
         <span
