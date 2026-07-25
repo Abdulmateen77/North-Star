@@ -56,11 +56,11 @@ export default function HomePage() {
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <ButtonLink href="/dashboard" size="lg">
-              Open the care dashboard
+              See their care
               <ArrowRight size={17} />
             </ButtonLink>
             <ButtonLink href="/patient" variant="outline" size="lg">
-              I&apos;m the one being cared for
+              See my health
             </ButtonLink>
           </div>
         </section>
