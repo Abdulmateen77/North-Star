@@ -10,8 +10,8 @@ export default async function PatientEmergencyPage() {
     getCareReceiver(),
   ]);
 
-  const primary = contacts.find((contact) => contact.primary) ?? contacts[0];
-  const others = contacts.filter((contact) => contact.id !== primary.id);
+  const primary = contacts.find((contact) => contact.primary) ?? contacts[0] ?? null;
+  const others = primary === null ? contacts : contacts.filter((contact) => contact.id !== primary.id);
 
   return (
     <>
@@ -54,20 +54,26 @@ export default async function PatientEmergencyPage() {
           Call your family
         </h2>
 
-        <a
-          href={`tel:${primary.phone.replace(/\s/g, "")}`}
-          className="mt-3 flex items-center gap-4 rounded-panel border border-clay-100 bg-clay-500 p-6 text-white shadow-lift transition duration-200 hover:bg-clay-600 active:scale-[0.99]"
-        >
-          <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/20">
-            <Phone size={26} />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-2xl leading-tight font-semibold">{primary.name}</span>
-            <span className="mt-0.5 block text-clay-50">
-              {primary.relationship} · {primary.phone}
+        {primary === null ? (
+          <p className="mt-3 rounded-panel border border-dashed border-bone-300 bg-white p-6 text-olive-500">
+            No family emergency contact has been saved yet.
+          </p>
+        ) : (
+          <a
+            href={`tel:${primary.phone.replace(/\s/g, "")}`}
+            className="mt-3 flex items-center gap-4 rounded-panel border border-clay-100 bg-clay-500 p-6 text-white shadow-lift transition duration-200 hover:bg-clay-600 active:scale-[0.99]"
+          >
+            <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/20">
+              <Phone size={26} />
             </span>
-          </span>
-        </a>
+            <span className="min-w-0">
+              <span className="block text-2xl leading-tight font-semibold">{primary.name}</span>
+              <span className="mt-0.5 block text-clay-50">
+                {primary.relationship} · {primary.phone}
+              </span>
+            </span>
+          </a>
+        )}
 
         <ul className="mt-3 space-y-3">
           {others.map((contact) => (
@@ -110,16 +116,22 @@ export default async function PatientEmergencyPage() {
 
         <dl className="mt-3 divide-y divide-bone-300/60 rounded-panel border border-bone-300/60 bg-white px-5 shadow-soft">
           <Row label="Name" value={receiver.fullName} />
-          <Row label="Age" value={String(receiver.age)} />
-          <Row label="Conditions" value={receiver.conditions.join(", ")} />
-          <Row label="Allergies" value={receiver.allergies.join(", ")} highlight />
+          {receiver.age > 0 ? <Row label="Age" value={String(receiver.age)} /> : null}
+          <Row
+            label="Conditions"
+            value={receiver.conditions.length > 0 ? receiver.conditions.join(", ") : "Not saved"}
+          />
+          <Row
+            label="Allergies"
+            value={receiver.allergies.length > 0 ? receiver.allergies.join(", ") : "Not saved"}
+            highlight={receiver.allergies.length > 0}
+          />
           {receiver.bloodType !== null ? (
             <Row label="Blood type" value={receiver.bloodType} />
           ) : null}
           {receiver.nhsNumber !== null ? (
             <Row label="NHS number" value={receiver.nhsNumber} />
           ) : null}
-          <Row label="Recent surgery" value="Right hip replacement, 2 July 2026" />
         </dl>
       </section>
     </>

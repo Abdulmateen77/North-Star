@@ -1,7 +1,7 @@
 import { getEnv } from "@/lib/env";
 import { jsonResponse, withApiHandler } from "@/lib/http";
 import { parseJsonBody, resolveRouteParams, validateParams } from "@/lib/validation";
-import { authenticateRequest } from "@/services/auth.service";
+import { getDefaultActor } from "@/services/auth.service";
 import { requireCronSecret } from "@/shared/security/cron-auth";
 
 import {
@@ -30,7 +30,7 @@ export class CareManagementController {
 
   async createTask(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await authenticateRequest(request);
+      const actor = await getDefaultActor(request);
       const input = await parseJsonBody(request, createTaskSchema);
       const task = await this.service.createTask(actor.id, input);
       return jsonResponse({ task }, 201);
@@ -39,7 +39,7 @@ export class CareManagementController {
 
   async listTasks(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await authenticateRequest(request);
+      const actor = await getDefaultActor(request);
       const query = listTasksQuerySchema.parse(queryObject(request));
       const tasks = await this.service.listTasks(actor.id, {
         careSpaceId: query.careSpaceId,
@@ -54,7 +54,7 @@ export class CareManagementController {
 
   async completeTask(request: Request, context: IdRouteContext): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await authenticateRequest(request);
+      const actor = await getDefaultActor(request);
       const params = validateParams(await resolveRouteParams(context.params), taskIdParamSchema);
       const task = await this.service.completeTask(actor.id, params.id);
       return jsonResponse({ task });
@@ -63,7 +63,7 @@ export class CareManagementController {
 
   async createReminder(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await authenticateRequest(request);
+      const actor = await getDefaultActor(request);
       const input = await parseJsonBody(request, createReminderSchema);
       const reminder = await this.service.createReminder(actor.id, input);
       return jsonResponse({ reminder }, 201);
@@ -72,7 +72,7 @@ export class CareManagementController {
 
   async listReminders(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await authenticateRequest(request);
+      const actor = await getDefaultActor(request);
       const query = listRemindersQuerySchema.parse(queryObject(request));
       const reminders = await this.service.listReminders(actor.id, {
         careSpaceId: query.careSpaceId,
@@ -87,7 +87,7 @@ export class CareManagementController {
 
   async triggerReminder(request: Request, context: IdRouteContext): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await authenticateRequest(request);
+      const actor = await getDefaultActor(request);
       const params = validateParams(await resolveRouteParams(context.params), reminderIdParamSchema);
       const reminder = await this.service.triggerReminder(actor.id, params.id);
       return jsonResponse({ reminder });

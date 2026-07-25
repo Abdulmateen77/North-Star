@@ -1,12 +1,12 @@
 import { updateUserSchema } from "@/domain/schemas";
 import { jsonResponse, noContentResponse, withApiHandler } from "@/lib/http";
 import { parseJsonBody } from "@/lib/validation";
-import { authenticateRequest } from "@/services/auth.service";
+import { getDefaultActor } from "@/services/auth.service";
 import { createUserService } from "@/services/factory";
 
 export async function GET(request: Request): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor(request);
     const user = await createUserService().getCurrentUser(actor);
 
     return jsonResponse({ user });
@@ -15,7 +15,7 @@ export async function GET(request: Request): Promise<Response> {
 
 export async function PATCH(request: Request): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor(request);
     const input = await parseJsonBody(request, updateUserSchema);
     const user = await createUserService().updateCurrentUser(actor, input);
 
@@ -25,7 +25,7 @@ export async function PATCH(request: Request): Promise<Response> {
 
 export async function DELETE(request: Request): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor(request);
     await createUserService().deleteCurrentUser(actor);
 
     return noContentResponse();
