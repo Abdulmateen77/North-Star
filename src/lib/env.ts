@@ -9,6 +9,15 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   OPENAI_API_KEY: z.string().min(1).optional(),
+  OPENAI_HEALTH_RECORDS_MODEL: z.string().min(1).default("gpt-4o-mini"),
+  OPENAI_OCR_MODEL: z.string().min(1).default("gpt-4o-mini"),
+  HEALTH_RECORDS_STORAGE_BUCKET: z.string().min(1).default("health-records"),
+  HEALTH_RECORDS_MAX_FILE_SIZE_BYTES: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(10 * 1024 * 1024),
+  HEALTH_RECORDS_AI_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
 });
 
 export type Env = z.infer<typeof envSchema>;

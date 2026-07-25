@@ -73,6 +73,11 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 LOG_LEVEL=info
+OPENAI_HEALTH_RECORDS_MODEL=gpt-4o-mini
+OPENAI_OCR_MODEL=gpt-4o-mini
+HEALTH_RECORDS_STORAGE_BUCKET=health-records
+HEALTH_RECORDS_MAX_FILE_SIZE_BYTES=10485760
+HEALTH_RECORDS_AI_TIMEOUT_MS=30000
 ```
 
 ---
@@ -89,6 +94,7 @@ Implemented foundation code includes:
 - Repository and service layers for care space management
 - CRUD APIs for users, care spaces, and care members
 - Supabase migration for `profiles`, `care_spaces`, and `care_members`
+- Health Records bounded context for healthcare document uploads, text extraction, AI analysis, normalized medical record persistence, signed retrieval URLs, and downstream domain events
 
 See `docs/backend-api.md` for the implemented API surface.
 

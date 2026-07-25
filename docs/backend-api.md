@@ -47,11 +47,95 @@ API routes expect an access token in the HTTP `Authorization` header using the B
 - `GET /api/care-spaces/:careSpaceId/members/:careMemberId`
 - `PATCH /api/care-spaces/:careSpaceId/members/:careMemberId`
 - `DELETE /api/care-spaces/:careSpaceId/members/:careMemberId`
+- `POST /api/health-records/documents`
+- `GET /api/health-records/documents?careSpaceId=:careSpaceId&page=1&pageSize=20`
+- `GET /api/health-records/documents/:id`
+- `DELETE /api/health-records/documents/:id`
+- `POST /api/health-records/documents/:id/analyze`
 
 ## Domain models
 
 - `User`
 - `CareSpace`
 - `CareMember`
+- `HealthcareDocument`
+- `ExtractedMedicalRecord`
+- `Appointment`
+- `Medication`
+- `MedicalCondition`
+- `MedicalInstruction`
 
-The service layer intentionally contains only care space management logic.
+## Health Records
+
+The Health Records bounded context is the canonical source of healthcare information inside a care space.
+
+### Upload document
+
+`POST /api/health-records/documents`
+
+Multipart form data:
+
+- `careSpaceId`: UUID
+- `file`: PDF, JPG, or PNG healthcare document
+
+Response:
+
+```json
+{
+  "documentId": "...",
+  "status": "uploaded"
+}
+```
+
+### Analyze document
+
+`POST /api/health-records/documents/:id/analyze`
+
+Runs storage retrieval, OCR/text extraction, the Document Agent, AI output validation, and persistence into normalized records.
+
+Response:
+
+```json
+{
+  "documentId": "...",
+  "status": "analyzed",
+  "analysis": {
+    "documentType": "appointment_letter",
+    "summary": "...",
+    "appointments": [],
+    "medications": [],
+    "conditions": [],
+    "instructions": [],
+    "confidence": 0.94
+  }
+}
+```
+
+### List documents
+
+`GET /api/health-records/documents`
+
+Required query:
+
+- `careSpaceId`
+
+Optional query:
+
+- `page`
+- `pageSize`
+- `status`
+- `documentType`
+- `sortBy`: `uploadedAt`, `title`, `documentType`, `status`
+- `sortDirection`: `asc`, `desc`
+
+### Get document
+
+`GET /api/health-records/documents/:id`
+
+Returns document metadata, a signed original-document URL, latest AI analysis, and normalized appointments, medications, conditions, and medical instructions.
+
+### Delete document
+
+`DELETE /api/health-records/documents/:id`
+
+Soft-deletes the document metadata only. Original uploads are not overwritten.
