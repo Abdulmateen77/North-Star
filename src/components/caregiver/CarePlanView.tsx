@@ -421,7 +421,7 @@ function ScheduleView({
       <section>
         <h2 className="text-xl text-olive-900">Reminders</h2>
         <p className="mt-1 text-sm text-olive-600">
-          What Margaret is nudged about, and whether she confirmed.
+          Saved reminders and their confirmation state.
         </p>
 
         <Card className="stagger mt-4 divide-y divide-bone-300/50 p-2">

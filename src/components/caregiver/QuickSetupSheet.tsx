@@ -27,7 +27,7 @@ const sheetMeta: Record<SetupKind, { title: string; blurb: string; icon: typeof 
   },
   reminder: {
     title: "Set a reminder",
-    blurb: "Margaret gets a gentle nudge, and you'll see when she confirms it.",
+    blurb: "The care receiver gets a gentle nudge, and you can track confirmation.",
     icon: AlarmClock,
   },
   medicine: {
@@ -462,7 +462,7 @@ function MedicineForm() {
       instruction: describeTimings(timings),
       timings,
       purpose: purpose.trim() === "" ? "Added by the family" : purpose.trim(),
-      prescribedBy: "Added by Amara",
+      prescribedBy: "Added by caregiver",
       startedAt: new Date().toISOString().slice(0, 10),
       changedNote: null,
       refillsRemaining: 1,

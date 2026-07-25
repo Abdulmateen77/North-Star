@@ -13,8 +13,8 @@ export default async function TimelinePage() {
     <PageBody>
       <PageHeader
         eyebrow="Care timeline"
-        title="Margaret's story so far"
-        description="Everything that's happened, in order — appointments, medication changes, hospital stays and the small wins in between."
+        title="Care timeline"
+        description="Everything saved to the live care timeline, in order."
       />
       <TimelineView events={events} people={[...caregivers, receiver]} />
     </PageBody>

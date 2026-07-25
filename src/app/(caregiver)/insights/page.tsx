@@ -50,7 +50,7 @@ export default async function InsightsPage() {
       <PageHeader
         eyebrow="Insights & alerts"
         title="What's changed this week"
-        description="Patterns North Star noticed across Margaret's medicines, appointments and readings."
+        description="Patterns North Star notices across live medicines, appointments and readings."
       />
 
       {/* --- Weekly summary --------------------------------------------------- */}
@@ -60,19 +60,17 @@ export default async function InsightsPage() {
             <StarMark size={17} />
           </span>
           <div>
-            <p className="text-sm font-medium text-olive-900">This week in summary</p>
-            <p className="text-xs text-olive-400">19–25 July</p>
+            <p className="text-sm font-medium text-olive-900">Live summary</p>
+            <p className="text-xs text-olive-400">Generated from saved data</p>
           </div>
         </div>
 
         <p className="mt-5 max-w-3xl text-lg leading-relaxed text-pretty text-olive-800">
-          Margaret has had a good week. Her blood tests came back better than April&apos;s, her
-          blood pressure has settled since the Ramipril change, and David logged her walking
-          to the gate without the frame — a first since the operation.
+          No live insight summary is available yet.
         </p>
         <p className="mt-3 max-w-3xl leading-relaxed text-pretty text-olive-600">
-          Two things need the family: the six-week orthopaedic follow-up still isn&apos;t booked,
-          and her Ramipril runs out in nine days.
+          Add documents, tasks, reminders, and timeline events to let North Star surface
+          care patterns here.
         </p>
       </Card>
 

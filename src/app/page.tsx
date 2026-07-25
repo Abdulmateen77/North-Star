@@ -30,7 +30,7 @@ export default function HomePage() {
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-7">
         <Logo />
         <Link
-          href="/dashboard"
+          href="/login"
           className="text-sm font-medium text-olive-600 transition hover:text-olive-900"
         >
           Sign in

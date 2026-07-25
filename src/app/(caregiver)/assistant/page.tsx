@@ -9,16 +9,14 @@ export default async function AssistantPage() {
     getCurrentUser(),
   ]);
 
-  // Only the opening briefing is shown; the scripted exchange below it is a
-  // demo aid, so the thread starts clean and the suggestions stay visible.
   const opening = messages.slice(0, 1);
 
   return (
     <PageBody>
       <PageHeader
         eyebrow="AI assistant"
-        title="Ask anything about Margaret's care"
-        description="It has read every document, appointment and medication change in her record."
+        title="Ask anything about this care space"
+        description="Answers come from live North Star records saved in Supabase."
       />
       <div className="mt-8">
         <AssistantView initialMessages={opening} suggestions={suggestions} user={user} />

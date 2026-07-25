@@ -12,7 +12,7 @@ export default function CarePlanPage() {
       <PageHeader
         eyebrow="Care plan"
         title="Everything that needs doing"
-        description="Tasks the family is sharing, the medicines Margaret takes, and what's coming up."
+        description="Tasks the care circle is sharing, reminders, and what's coming up."
         action={<SetupButton kind="task" label="Set something up" />}
       />
       <CarePlanView />

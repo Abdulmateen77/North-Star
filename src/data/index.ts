@@ -1,27 +1,3 @@
-/**
- * The single seam between the UI and its data.
- *
- * Every screen reads care data through these functions and nothing else — no
- * component imports `./mock` directly. Each one is already async, so replacing
- * a body with a `fetch` against `/api/...` is a local change that needs no
- * edits in the UI layer.
- *
- * Example of the eventual swap:
- *
- *   export async function getCareTasks(): Promise<CareTask[]> {
- *     const res = await fetch(`${apiBase}/api/care-spaces/${id}/tasks`, {
- *       headers: { Authorization: `Bearer ${token}` },
- *     });
- *     if (!res.ok) throw await toApiError(res);
- *     return res.json();
- *   }
- *
- * Note the backend only models User / CareSpace / CareMember today, so most of
- * these have no endpoint behind them yet. `src/data/types.ts` documents the
- * shape each one is expected to return.
- */
-
-import * as mock from "./mock";
 import type {
   Appointment,
   CareDocument,
@@ -39,91 +15,128 @@ import type {
   TimelineEvent,
 } from "./types";
 
+const emptyReceiver: CareReceiver = {
+  id: "care-receiver-unset",
+  fullName: "Care receiver",
+  initials: "CR",
+  relationship: "Care receiver",
+  role: "care-receiver",
+  avatarUrl: null,
+  accent: "gold",
+  age: 0,
+  situation: "No care receiver profile has been added yet.",
+  conditions: [],
+  allergies: [],
+  bloodType: null,
+  nhsNumber: null,
+};
+
+const emptyUser: CarePerson = {
+  id: "signed-in-caregiver",
+  fullName: "Caregiver",
+  initials: "CG",
+  relationship: "You",
+  role: "caregiver",
+  avatarUrl: null,
+  accent: "clay",
+};
+
 /* --- People --------------------------------------------------------------- */
 
 export async function getCareReceiver(): Promise<CareReceiver> {
-  return mock.careReceiver;
+  return emptyReceiver;
 }
 
 export async function getCaregivers(): Promise<CarePerson[]> {
-  return mock.caregivers;
+  return [emptyUser];
 }
 
 export async function getCurrentUser(): Promise<CarePerson> {
-  return mock.currentUser;
+  return emptyUser;
 }
 
 /* --- Medications ---------------------------------------------------------- */
 
 export async function getMedications(): Promise<Medication[]> {
-  return mock.medications;
+  return [];
 }
 
 export async function getTodaysDoses(): Promise<MedicationDose[]> {
-  return mock.todaysDoses;
+  return [];
 }
 
 /* --- Tasks ---------------------------------------------------------------- */
 
 export async function getCareTasks(): Promise<CareTask[]> {
-  return mock.careTasks;
+  return [];
 }
 
 /* --- Scheduling ----------------------------------------------------------- */
 
 export async function getAppointments(): Promise<Appointment[]> {
-  return mock.appointments;
+  return [];
 }
 
 export async function getReminders(): Promise<Reminder[]> {
-  return mock.reminders;
+  return [];
 }
 
 /* --- Timeline & documents ------------------------------------------------- */
 
 export async function getTimelineEvents(): Promise<TimelineEvent[]> {
-  // Newest first — the UI relies on this ordering rather than sorting again.
-  return [...mock.timelineEvents].sort(
-    (a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt),
-  );
+  return [];
 }
 
 export async function getCareDocuments(): Promise<CareDocument[]> {
-  return [...mock.careDocuments].sort(
-    (a, b) => Date.parse(b.uploadedAt) - Date.parse(a.uploadedAt),
-  );
+  return [];
 }
 
 /* --- Assistant ------------------------------------------------------------ */
 
 export async function getAssistantConversation(): Promise<ChatMessage[]> {
-  return mock.assistantConversation;
+  return [
+    {
+      id: "assistant-greeting",
+      author: "assistant",
+      body:
+        "Ask me a question about this care space. I will answer from saved North Star records only.",
+      timeLabel: "Now",
+      citations: [],
+      actions: [],
+    },
+  ];
 }
 
 export async function getAssistantSuggestions(): Promise<string[]> {
-  return mock.assistantSuggestions;
+  return [
+    "What tasks are outstanding?",
+    "What reminders are coming up?",
+    "Summarise the latest records.",
+  ];
 }
 
 /* --- Insights ------------------------------------------------------------- */
 
 export async function getInsights(): Promise<Insight[]> {
-  return mock.insights;
+  return [];
 }
 
 export async function getHealthMetrics(): Promise<HealthMetric[]> {
-  return mock.healthMetrics;
+  return [];
 }
 
 /* --- Family --------------------------------------------------------------- */
 
 export async function getFamilyUpdates(): Promise<FamilyUpdate[]> {
-  return mock.familyUpdates;
+  return [];
 }
 
 export async function getEmergencyContacts(): Promise<EmergencyContact[]> {
-  return mock.emergencyContacts;
+  return [];
 }
 
 /* --- Lookup helper -------------------------------------------------------- */
 
-export { findPerson } from "./mock";
+export function findPerson(_id: string | null): CarePerson | null {
+  return null;
+}

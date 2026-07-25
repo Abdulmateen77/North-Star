@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Gabarito } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import "@/styles/globals.css";
 
 /**
@@ -39,7 +40,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${gabarito.variable} ${fraunces.variable}`}>
-      <body className="min-h-dvh bg-bone-100 text-olive-900 antialiased">{children}</body>
+      <body className="min-h-dvh bg-bone-100 text-olive-900 antialiased">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

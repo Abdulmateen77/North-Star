@@ -52,7 +52,7 @@ export default async function CirclePage() {
     <PageBody>
       <PageHeader
         eyebrow="Family care circle"
-        title="Who's looking after Margaret"
+        title="Care circle"
         description="Everyone in the circle sees the same picture. What they can change depends on their role."
         action={
           <Button>

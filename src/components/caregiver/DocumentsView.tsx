@@ -1,20 +1,16 @@
 "use client";
 
-import {
-  CheckCircle2,
-  FileText,
-  Loader2,
-  Paperclip,
-  UploadCloud,
-} from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { AlertCircle, CheckCircle2, FileText, Loader2, Paperclip, UploadCloud } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 
+import { useCare } from "@/components/caregiver/CareProvider";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { StarMark } from "@/components/ui/Logo";
 import { cn } from "@/components/ui/cn";
 import type { CareDocument, DocumentKind } from "@/data/types";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 const kindLabels: Record<DocumentKind, string> = {
   "discharge-summary": "Discharge summary",
@@ -25,95 +21,96 @@ const kindLabels: Record<DocumentKind, string> = {
   other: "Document",
 };
 
-/** The stages a freshly dropped file moves through, with copy for each. */
-const analysisStages = [
-  { at: 0, label: "Uploading securely" },
-  { at: 34, label: "Reading the document" },
-  { at: 58, label: "Pulling out dates and medicines" },
-  { at: 80, label: "Building the summary" },
-] as const;
-
 export function DocumentsView({ documents }: { documents: CareDocument[] }) {
+  const { careSpaceId } = useCare();
   const [docs, setDocs] = useState(documents);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const timers = useRef<ReturnType<typeof setInterval>[]>([]);
 
-  useEffect(() => {
-    const pending = timers.current;
-    return () => pending.forEach(clearInterval);
-  }, []);
+  const ingest = useCallback(
+    async (file: File) => {
+      const id = `upload-${Date.now()}`;
+      const draft: CareDocument = {
+        id,
+        title: file.name.replace(/\.[^.]+$/, ""),
+        kind: "other",
+        status: "uploading",
+        source: "Uploaded by you",
+        uploadedAt: new Date().toISOString(),
+        dateLabel: "Just now",
+        fileName: file.name,
+        fileSizeLabel: formatSize(file.size),
+        pageCount: 1,
+        aiSummary: null,
+        extractedFacts: [],
+        generatedTaskIds: [],
+        progress: 0,
+      };
 
-  /**
-   * Runs the upload → analyse → ready sequence locally. When the backend's
-   * document endpoints land, this is where the POST and its polling go; the
-   * rendering below already handles every status.
-   */
-  const ingest = useCallback((file: File) => {
-    const id = `doc-local-${Date.now()}`;
-    const draft: CareDocument = {
-      id,
-      title: file.name.replace(/\.[^.]+$/, ""),
-      kind: "other",
-      status: "uploading",
-      source: "Uploaded by you",
-      uploadedAt: new Date().toISOString(),
-      dateLabel: "Just now",
-      fileName: file.name,
-      fileSizeLabel: formatSize(file.size),
-      pageCount: 1,
-      aiSummary: null,
-      extractedFacts: [],
-      generatedTaskIds: [],
-      progress: 0,
-    };
+      setDocs((current) => [draft, ...current]);
 
-    setDocs((current) => [draft, ...current]);
+      try {
+        if (careSpaceId === null) {
+          throw new Error("Sign in and create a care space before uploading documents.");
+        }
 
-    const timer = setInterval(() => {
-      setDocs((current) =>
-        current.map((doc) => {
-          if (doc.id !== id) return doc;
+        const { data } = await getSupabaseBrowserClient().auth.getSession();
+        const token = data.session?.access_token;
+        if (!token) throw new Error("You are not signed in.");
 
-          const progress = Math.min(100, doc.progress + 4 + Math.random() * 7);
+        const form = new FormData();
+        form.set("careSpaceId", careSpaceId);
+        form.set("file", file);
 
-          if (progress >= 100) {
-            clearInterval(timer);
-            return {
-              ...doc,
-              progress: 100,
-              status: "ready",
-              kind: "letter",
-              aiSummary:
-                "North Star has read this document and added anything date-related to Margaret's timeline. Nothing in it changes her current medicines. Open it below to see the details, or ask the assistant about anything that isn't clear.",
-              extractedFacts: [
-                { label: "Pages", value: String(doc.pageCount) },
-                { label: "Added to timeline", value: "Yes" },
-                { label: "Medicine changes", value: "None found" },
-              ],
-            };
-          }
+        const response = await fetch("/api/health-records/documents", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: form,
+        });
 
-          return {
-            ...doc,
-            progress,
-            status: progress > 30 ? "analysing" : "uploading",
-          };
-        }),
-      );
-    }, 260);
+        if (!response.ok) {
+          throw new Error(`Upload failed with status ${response.status}`);
+        }
 
-    timers.current.push(timer);
-  }, []);
+        const body = (await response.json()) as { documentId: string; status: string };
+        setDocs((current) =>
+          current.map((doc) =>
+            doc.id === id
+              ? {
+                  ...doc,
+                  id: body.documentId,
+                  status: "ready",
+                  progress: 100,
+                  extractedFacts: [{ label: "Saved", value: body.status }],
+                }
+              : doc,
+          ),
+        );
+      } catch (error) {
+        setDocs((current) =>
+          current.map((doc) =>
+            doc.id === id
+              ? {
+                  ...doc,
+                  status: "failed",
+                  progress: 100,
+                  aiSummary: error instanceof Error ? error.message : "Upload failed.",
+                }
+              : doc,
+          ),
+        );
+      }
+    },
+    [careSpaceId],
+  );
 
   function handleFiles(files: FileList | null) {
     if (files === null) return;
-    Array.from(files).forEach(ingest);
+    Array.from(files).forEach((file) => void ingest(file));
   }
 
   return (
     <>
-      {/* --- Drop zone -------------------------------------------------------- */}
       <div
         onDragOver={(event) => {
           event.preventDefault();
@@ -141,10 +138,9 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
           <UploadCloud size={28} />
         </span>
 
-        <h2 className="mt-5 text-xl text-olive-900">Drop a letter or report here</h2>
+        <h2 className="mt-5 text-xl text-olive-900">Upload a letter or report</h2>
         <p className="mx-auto mt-2 max-w-md leading-relaxed text-pretty text-olive-600">
-          NHS letters, discharge summaries, test results, prescriptions. We&apos;ll read it,
-          explain it in plain English, and add anything important to the timeline.
+          PDF, JPG, and PNG files are saved to the live Supabase-backed health records bucket.
         </p>
 
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -152,7 +148,7 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
             <Paperclip size={16} />
             Choose a file
           </Button>
-          <span className="text-sm text-olive-400">PDF, JPG or PNG · up to 20MB</span>
+          <span className="text-sm text-olive-400">PDF, JPG or PNG · up to 10MB</span>
         </div>
 
         <input
@@ -168,11 +164,15 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
         />
       </div>
 
-      {/* --- Documents -------------------------------------------------------- */}
       <div className="stagger mt-8 space-y-4">
         {docs.map((doc) => (
           <DocumentCard key={doc.id} doc={doc} />
         ))}
+        {docs.length === 0 ? (
+          <Card className="border-dashed p-8 text-center text-sm text-olive-400">
+            No live documents saved yet.
+          </Card>
+        ) : null}
       </div>
     </>
   );
@@ -180,8 +180,7 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
 
 function DocumentCard({ doc }: { doc: CareDocument }) {
   const busy = doc.status === "uploading" || doc.status === "analysing";
-  const stage =
-    [...analysisStages].reverse().find((s) => doc.progress >= s.at) ?? analysisStages[0];
+  const failed = doc.status === "failed";
 
   return (
     <Card className="overflow-hidden p-5 sm:p-6">
@@ -189,10 +188,14 @@ function DocumentCard({ doc }: { doc: CareDocument }) {
         <span
           className={cn(
             "grid size-12 shrink-0 place-items-center rounded-2xl",
-            busy ? "bg-gold-50 text-gold-500" : "bg-bone-200 text-olive-600",
+            busy
+              ? "bg-gold-50 text-gold-500"
+              : failed
+                ? "bg-clay-50 text-clay-600"
+                : "bg-bone-200 text-olive-600",
           )}
         >
-          {busy ? <Loader2 size={20} className="animate-spin" /> : <FileText size={20} />}
+          {busy ? <Loader2 size={20} className="animate-spin" /> : failed ? <AlertCircle size={20} /> : <FileText size={20} />}
         </span>
 
         <div className="min-w-0 flex-1">
@@ -205,66 +208,48 @@ function DocumentCard({ doc }: { doc: CareDocument }) {
           </p>
         </div>
 
-        {!busy ? (
+        {busy ? (
+          <Badge tone="gold" className="shrink-0">
+            <Loader2 size={12} className="animate-spin" />
+            Saving
+          </Badge>
+        ) : failed ? (
+          <Badge tone="rose" className="shrink-0">
+            <AlertCircle size={12} />
+            Failed
+          </Badge>
+        ) : (
           <Badge tone="olive" className="shrink-0">
             <CheckCircle2 size={12} />
-            Understood
+            Saved
           </Badge>
-        ) : null}
+        )}
       </div>
 
-      {/* --- In-flight analysis --------------------------------------------- */}
-      {busy ? (
-        <div className="mt-5">
-          <div className="flex items-center justify-between text-sm">
-            <span className="flex items-center gap-2 text-gold-500">
-              <StarMark size={13} />
-              {stage.label}
-            </span>
-            <span className="text-olive-400">{Math.round(doc.progress)}%</span>
-          </div>
-          <div className="mt-2.5 h-1.5 overflow-hidden rounded-pill bg-bone-200">
-            <div
-              className="h-full rounded-pill bg-gold-500 transition-[width] duration-300 ease-out"
-              style={{ width: `${doc.progress}%` }}
-            />
-          </div>
-        </div>
-      ) : null}
-
-      {/* --- AI understanding ------------------------------------------------ */}
       {doc.aiSummary ? (
         <div className="mt-5 rounded-card border border-gold-100 bg-gold-50/60 p-4 sm:p-5">
           <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-gold-500 uppercase">
             <StarMark size={12} />
-            What this says
+            Status
           </p>
           <p className="mt-2.5 leading-relaxed text-pretty text-olive-800">{doc.aiSummary}</p>
-
-          {doc.extractedFacts.length > 0 ? (
-            <dl className="mt-4 flex flex-wrap gap-2">
-              {doc.extractedFacts.map((fact) => (
-                <div
-                  key={fact.label}
-                  className="rounded-2xl border border-gold-100 bg-white/80 px-3 py-2"
-                >
-                  <dt className="text-[0.68rem] tracking-wide text-olive-400 uppercase">
-                    {fact.label}
-                  </dt>
-                  <dd className="mt-0.5 text-sm font-medium text-olive-900">{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
-
-          {doc.generatedTaskIds.length > 0 ? (
-            <p className="mt-4 flex items-center gap-2 border-t border-gold-100 pt-3.5 text-sm text-gold-500">
-              <CheckCircle2 size={14} />
-              {doc.generatedTaskIds.length} task
-              {doc.generatedTaskIds.length === 1 ? "" : "s"} created for the family
-            </p>
-          ) : null}
         </div>
+      ) : null}
+
+      {doc.extractedFacts.length > 0 ? (
+        <dl className="mt-4 flex flex-wrap gap-2">
+          {doc.extractedFacts.map((fact) => (
+            <div
+              key={fact.label}
+              className="rounded-2xl border border-gold-100 bg-white/80 px-3 py-2"
+            >
+              <dt className="text-[0.68rem] tracking-wide text-olive-400 uppercase">
+                {fact.label}
+              </dt>
+              <dd className="mt-0.5 text-sm font-medium text-olive-900">{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
       ) : null}
     </Card>
   );

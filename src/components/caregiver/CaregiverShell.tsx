@@ -20,6 +20,7 @@ import type { CarePerson, CareReceiver } from "@/data/types";
 import { Avatar } from "@/components/ui/Avatar";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/components/ui/cn";
+import { useCare } from "./CareProvider";
 
 const navItems = [
   { href: "/dashboard", label: "Today", icon: Home },
@@ -42,6 +43,17 @@ export function CaregiverShell({
 }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { careSpaceName, people } = useCare();
+  const displayUser = people[0] ?? user;
+  const displayReceiver: CareReceiver = careSpaceName
+    ? {
+        ...receiver,
+        fullName: careSpaceName,
+        initials: "CS",
+        relationship: "Care space",
+        situation: "Live Supabase care space",
+      }
+    : receiver;
 
   // Navigating on mobile should always dismiss the drawer.
   useEffect(() => {
@@ -64,7 +76,7 @@ export function CaregiverShell({
           <Logo />
         </Link>
 
-        <CareReceiverCard receiver={receiver} className="mt-7" />
+        <CareReceiverCard receiver={displayReceiver} className="mt-7" />
 
         <nav className="mt-7 flex-1 space-y-1">
           {navItems.map((item) => (
@@ -73,11 +85,11 @@ export function CaregiverShell({
         </nav>
 
         <div className="mt-6 flex items-center gap-3 rounded-card border border-bone-300/50 bg-white/70 p-3">
-          <Avatar initials={user.initials} accent={user.accent} size="md" />
+          <Avatar initials={displayUser.initials} accent={displayUser.accent} size="md" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-olive-900">{user.fullName}</p>
+            <p className="truncate text-sm font-medium text-olive-900">{displayUser.fullName}</p>
             <p className="truncate text-xs text-olive-400">
-              {user.relationship} · Primary caregiver
+              {displayUser.relationship} · Primary caregiver
             </p>
           </div>
         </div>
@@ -120,7 +132,7 @@ export function CaregiverShell({
               </button>
             </div>
 
-            <CareReceiverCard receiver={receiver} className="mt-5" />
+            <CareReceiverCard receiver={displayReceiver} className="mt-5" />
 
             <nav className="mt-6 flex-1 space-y-1 overflow-y-auto">
               {navItems.map((item) => (
@@ -129,10 +141,10 @@ export function CaregiverShell({
             </nav>
 
             <div className="flex items-center gap-3 border-t border-bone-300/60 pt-4">
-              <Avatar initials={user.initials} accent={user.accent} size="md" />
+              <Avatar initials={displayUser.initials} accent={displayUser.accent} size="md" />
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-olive-900">{user.fullName}</p>
-                <p className="truncate text-xs text-olive-400">{user.relationship}</p>
+                <p className="truncate text-sm font-medium text-olive-900">{displayUser.fullName}</p>
+                <p className="truncate text-xs text-olive-400">{displayUser.relationship}</p>
               </div>
             </div>
           </div>

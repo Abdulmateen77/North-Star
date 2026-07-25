@@ -32,18 +32,19 @@ export default async function DashboardPage() {
   const takenCount = doses.filter((dose) => dose.status === "taken").length;
   const attention = insights.find((insight) => insight.tone === "attention");
   const firstName = user.fullName.split(" ")[0];
-  const receiverFirstName = receiver.fullName.split(" ")[0];
+  const receiverFirstName = receiver.fullName;
+  const doseProgress = doses.length === 0 ? 0 : takenCount / doses.length;
 
   return (
     <PageBody>
       <PageHeader
-        eyebrow="Saturday, 25 July"
+        eyebrow="Live care dashboard"
         title={
           <>
             Good morning, <Emphasis>{firstName}</Emphasis>
           </>
         }
-        description={`${receiverFirstName} had a settled night. Here's where things stand today.`}
+        description="Sign in and add records to build a live care plan from Supabase."
       />
 
       {/* --- The briefing. The brand's loudest surface, and the first thing a
@@ -59,14 +60,13 @@ export default async function DashboardPage() {
           </span>
           <div>
             <p className="text-sm font-semibold text-bone-50">Your daily briefing</p>
-            <p className="text-xs text-bone-300">Prepared at 8:30am</p>
+            <p className="text-xs text-bone-300">Generated from saved care data</p>
           </div>
         </div>
 
         <p className="mt-6 max-w-3xl text-xl leading-relaxed text-pretty text-bone-50 sm:text-2xl">
-          {receiverFirstName} took her morning medicines on time and did her physio set.
-          Two things need you today: the six-week orthopaedic follow-up still needs booking,
-          and her Ramipril is down to nine days.
+          No live briefing has been generated yet. Add tasks, reminders, and health records,
+          then ask the assistant to summarize what needs attention.
         </p>
 
         <Link
@@ -80,9 +80,9 @@ export default async function DashboardPage() {
 
       {/* --- Setting things up ------------------------------------------------ */}
       <section className="animate-fade-up mt-8">
-        <h2 className="text-lg text-olive-900">Set something up for {receiverFirstName}</h2>
+        <h2 className="text-lg text-olive-900">Set something up</h2>
         <p className="mt-1 text-sm text-olive-600">
-          It appears on her app straight away, and on the family&apos;s list.
+          Tasks and reminders save to the live care space when you are signed in.
         </p>
         <div className="mt-4">
           <SetupActions />
@@ -93,8 +93,8 @@ export default async function DashboardPage() {
       <div className="stagger mt-8 grid gap-5 lg:grid-cols-3">
         <Card className="p-6 sm:p-7 lg:col-span-2">
           <CardHeader
-            title={`${receiverFirstName}'s day`}
-            subtitle="Medicines, movement and how the routine is holding"
+            title="Today"
+            subtitle="Live medicine doses will appear here when records exist"
             action={
               <Badge tone="olive">
                 <span className="size-1.5 rounded-full bg-olive-500" />
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
           />
 
           <div className="mt-6 flex flex-col items-center gap-7 sm:flex-row sm:gap-9">
-            <ProgressRing value={takenCount / doses.length} size={132}>
+            <ProgressRing value={doseProgress} size={132}>
               <div>
                 <p className="text-3xl leading-none font-bold text-olive-900">
                   {takenCount}
@@ -123,6 +123,11 @@ export default async function DashboardPage() {
                   <DoseRow key={dose.id} dose={dose} />
                 ))}
               </ul>
+              {doses.length === 0 ? (
+                <p className="rounded-card border border-dashed border-bone-300 px-4 py-8 text-center text-sm text-olive-400">
+                  No live doses yet.
+                </p>
+              ) : null}
             </div>
           </div>
         </Card>
@@ -148,14 +153,19 @@ export default async function DashboardPage() {
 
       {/* --- Health signals --------------------------------------------------- */}
       <section className="mt-10">
-        <h2 className="text-xl text-olive-900">How {receiverFirstName} is doing</h2>
-        <p className="mt-1.5 text-sm text-olive-600">Trends over the last two weeks.</p>
+        <h2 className="text-xl text-olive-900">Health signals</h2>
+        <p className="mt-1.5 text-sm text-olive-600">Live trends will appear after records are added.</p>
 
         <div className="stagger mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric) => (
             <MetricCard key={metric.id} metric={metric} />
           ))}
         </div>
+        {metrics.length === 0 ? (
+          <Card className="mt-5 p-6 text-sm text-olive-500">
+            No live health metrics yet.
+          </Card>
+        ) : null}
       </section>
     </PageBody>
   );

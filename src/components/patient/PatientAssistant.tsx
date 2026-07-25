@@ -6,49 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { StarMark } from "@/components/ui/Logo";
 import { cn } from "@/components/ui/cn";
 
-type Message = { id: string; author: "user" | "assistant"; body: string };
-
-/**
- * Margaret's assistant. Same engine as the caregiver's, but the answers are
- * shorter, gentler, and never hand her a decision she'd need a clinician for.
- */
-const replies: Array<{ match: string[]; body: string }> = [
-  {
-    match: ["medicine", "medication", "tablet", "pill", "take"],
-    body: "You take three medicines every day.\n\nIn the morning with breakfast: Metformin and Ramipril. With your dinner: Metformin again. And one at bedtime: Atorvastatin.\n\nOn Sunday mornings you also take Alendronic acid, and you need to stay sitting up for half an hour afterwards.",
-  },
-  {
-    match: ["physio", "exercise", "exercises", "walk"],
-    body: "Your physio exercises are six short movements, about ten minutes, best done in the morning.\n\nThe first four you do sitting down. The last two you do standing, holding onto something steady.\n\nIf anything feels sharp rather than achy, stop and let Nadia know at your next session.",
-  },
-  {
-    match: ["appointment", "next", "coming up", "when"],
-    body: "Your next appointment is physiotherapy with Nadia on Thursday 30 July at half past ten, at Rowan Community Clinic.\n\nDavid is driving you. Bring your walking frame and your exercise sheet.",
-  },
-  {
-    match: ["hip", "operation", "surgery", "recovery", "pain"],
-    body: "You had your hip replaced on the 2nd of July, and you came home four days later. You're three weeks into recovery now, and you're doing well — you walked to the front gate without your frame this week.\n\nSome aching is normal at this stage. If the pain is sharp or new, ring the surgery on 020 7946 0330.",
-  },
-  {
-    match: ["blood", "test", "results", "sugar"],
-    body: "Your recent blood test came back well. Your blood sugar has come down since April and is now where Dr. Raman wants it.\n\nThere's nothing in the results you need to do anything about. Dr. Raman will talk you through them on the 6th of August.",
-  },
-];
-
-function replyFor(question: string): string {
-  const normalised = question.toLowerCase();
-  const hit = replies.find((entry) => entry.match.some((k) => normalised.includes(k)));
-
-  return (
-    hit?.body ??
-    "I'm not sure about that one, and I'd rather not guess.\n\nAmara or David would know — you can ring them from the Family page. If it's about how you're feeling, the surgery is on 020 7946 0330, or you can call 111."
-  );
-}
+ type Message = { id: string; author: "user" | "assistant"; body: string };
 
 const suggestions = [
-  "What medicines do I take today?",
-  "When is my next appointment?",
-  "How do I do my exercises?",
+  "What is saved for today?",
+  "What reminders are coming up?",
+  "Who should I contact?",
 ];
 
 export function PatientAssistant({ greeting }: { greeting: string }) {
@@ -60,8 +23,6 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
   const endRef = useRef<HTMLDivElement>(null);
   const hasInteracted = useRef(false);
 
-  // Only follow the thread after Margaret has asked something — scrolling on
-  // mount would hide the greeting she's meant to read first.
   useEffect(() => {
     if (!hasInteracted.current) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -83,10 +44,15 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
     window.setTimeout(() => {
       setMessages((current) => [
         ...current,
-        { id: `a-${Date.now()}`, author: "assistant", body: replyFor(trimmed) },
+        {
+          id: `a-${Date.now()}`,
+          author: "assistant",
+          body:
+            "The patient assistant is waiting for a live care-space connection. Ask your caregiver to sign in, add records, and enable the shared patient view.",
+        },
       ]);
       setThinking(false);
-    }, 1000);
+    }, 500);
   }
 
   return (
@@ -130,53 +96,49 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
               {[0, 1, 2].map((index) => (
                 <span
                   key={index}
-                  className="animate-breathe size-2.5 rounded-full bg-gold-500"
+                  className="animate-breathe size-2 rounded-full bg-gold-500"
                   style={{ animationDelay: `${index * 0.18}s`, animationDuration: "1.2s" }}
                 />
               ))}
             </div>
           </div>
         ) : null}
-
         <div ref={endRef} />
       </div>
 
-      {/* --- Composer --------------------------------------------------------- */}
-      <div className="sticky bottom-0 -mx-5 bg-gradient-to-t from-bone-100 via-bone-100 to-transparent px-5 pt-5 pb-2">
-        {messages.length === 1 ? (
-          <div className="mb-3 space-y-2">
-            {suggestions.map((suggestion) => (
-              <button
-                key={suggestion}
-                type="button"
-                onClick={() => send(suggestion)}
-                className="block w-full rounded-panel border border-bone-300/70 bg-white px-5 py-3.5 text-left text-base text-olive-800 shadow-soft transition duration-200 hover:border-clay-300 active:scale-[0.99]"
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        ) : null}
+      <div className="sticky bottom-0 -mx-4 bg-gradient-to-t from-bone-100 via-bone-100 to-transparent px-4 pt-6 pb-4">
+        <div className="no-scrollbar mb-3 flex gap-2 overflow-x-auto">
+          {suggestions.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => send(item)}
+              className="shrink-0 rounded-pill border border-bone-300 bg-white px-4 py-2 text-base text-olive-700"
+            >
+              {item}
+            </button>
+          ))}
+        </div>
 
         <form
           onSubmit={(event) => {
             event.preventDefault();
             send(draft);
           }}
-          className="flex items-center gap-2 rounded-panel border border-bone-300/70 bg-white p-2 shadow-soft focus-within:border-clay-300"
+          className="flex items-end gap-2 rounded-panel border border-bone-300 bg-white p-2 shadow-soft"
         >
-          <input
+          <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="Ask me anything…"
-            aria-label="Ask the assistant"
-            className="min-h-12 flex-1 bg-transparent px-3.5 text-lg text-olive-900 placeholder:text-olive-400 focus:outline-none"
+            rows={1}
+            placeholder="Ask North Star…"
+            className="max-h-36 min-h-12 flex-1 resize-none bg-transparent px-3 py-3 text-lg text-olive-900 placeholder:text-olive-400 focus:outline-none"
           />
           <button
             type="submit"
             disabled={draft.trim() === "" || thinking}
             aria-label="Send"
-            className="grid size-12 shrink-0 place-items-center rounded-full bg-clay-500 text-white transition hover:bg-clay-600 disabled:opacity-40"
+            className="grid size-12 shrink-0 place-items-center rounded-full bg-clay-500 text-white disabled:opacity-40"
           >
             <ArrowUp size={20} />
           </button>

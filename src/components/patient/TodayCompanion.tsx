@@ -23,7 +23,7 @@ const kindIcons = {
 } as const;
 
 /**
- * Margaret's whole day on one screen.
+ * The care receiver's whole day on one screen.
  *
  * The design rule here is one decision at a time: a single large card for the
  * next thing she needs to do, and everything else demoted to a quiet list

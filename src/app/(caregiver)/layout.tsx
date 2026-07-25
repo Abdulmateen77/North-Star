@@ -31,7 +31,6 @@ export default async function CaregiverLayout({ children }: { children: ReactNod
       getAppointments(),
     ]);
 
-  // Margaret picks up tasks herself, so she belongs in every assignee list.
   const people = [...caregivers, receiver];
 
   return (
