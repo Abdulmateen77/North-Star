@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { AuditEventPublisher, AuditLogService, SupabaseAuditLogRepository } from "@/shared/audit";
 import { CompositeEventPublisher, LoggingEventPublisher } from "@/shared/events/event-publisher";
 import { SupabaseTimelineRepository, TimelineEventPublisher, TimelineService } from "@/domains/timeline";
 
@@ -15,6 +16,7 @@ export function createCareManagementService(): CareManagementService {
   const events = new CompositeEventPublisher([
     new LoggingEventPublisher(),
     new TimelineEventPublisher(timeline),
+    new AuditEventPublisher(new AuditLogService(new SupabaseAuditLogRepository(supabase))),
   ]);
 
   return new CareManagementService(

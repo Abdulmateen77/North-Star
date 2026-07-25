@@ -37,6 +37,9 @@ API routes expect an access token in the HTTP `Authorization` header using the B
 - The default mutation limit is 120 requests per minute per client/method/path.
 - Routes can override the limiter by passing `rateLimit` options to `withApiHandler`.
 - Rate limit failures return a consistent JSON error with status `429` and code `RATE_LIMITED`.
+- Domain events are persisted to `audit_logs` through the shared audit event publisher.
+- Audit metadata is recursively redacted for sensitive keys such as tokens, passwords, secrets, API keys, authorization headers, cookies, and sessions.
+- Direct audit-log reads are owner-only via RLS; writes are performed server-side after service authorization.
 
 ## Implemented API routes
 

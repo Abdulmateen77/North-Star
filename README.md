@@ -101,6 +101,7 @@ Implemented foundation code includes:
 - AI Care Engine for context-grounded assistant answers and daily briefings
 - Notifications, Realtime gateway abstraction, Dashboard aggregation, and Analytics insights
 - Shared mutation rate limiting with consistent `RATE_LIMITED` API errors
+- Durable audit logging for domain events with sensitive metadata redaction
 
 See `docs/backend-api.md` for the implemented API surface.
 
