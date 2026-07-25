@@ -77,6 +77,18 @@ export function mapDomainEventToTimelineInput(event: DomainEvent): CreateTimelin
         createdAt: event.occurredAt,
         metadata: event,
       };
+    case "InvitationAccepted":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: "Invitation accepted",
+        description: null,
+        sourceDomain: "collaboration",
+        sourceId: event.invitationId,
+        createdBy: event.acceptedBy,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
     case "CommentCreated":
       return {
         careSpaceId: event.careSpaceId,

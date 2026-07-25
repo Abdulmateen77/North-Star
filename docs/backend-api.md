@@ -73,6 +73,7 @@ API routes expect an access token in the HTTP `Authorization` header using the B
 - `GET /api/timeline/feed?careSpaceId=:careSpaceId`
 - `GET /api/timeline/events/:id`
 - `POST /api/collaboration/invite`
+- `POST /api/collaboration/invitations/accept`
 - `PATCH /api/collaboration/permissions`
 - `GET /api/collaboration/activity?careSpaceId=:careSpaceId`
 - `GET /api/collaboration/comments?careSpaceId=:careSpaceId`
@@ -196,7 +197,7 @@ Timeline is an append-only event feed. Health Records, Care Management, Collabor
 
 ## Family Collaboration
 
-Collaboration supports invitations, permission updates, care-space activity, and shared comments. All operations are scoped to care-space membership.
+Collaboration supports invitations, invitation acceptance, permission updates, care-space activity, and shared comments. Invite acceptance uses a token, adds the authenticated user as a care-space member, marks the invitation accepted, and publishes `InvitationAccepted` into timeline/audit.
 
 ## AI Care Engine
 

@@ -98,7 +98,7 @@ Implemented foundation code includes:
 - Health Records bounded context for healthcare document uploads, text extraction, AI analysis, normalized medical record persistence, signed retrieval URLs, and downstream domain events
 - Care Management for tasks, reminders, assignments, and completion events
 - Append-only Timeline feed projected from typed domain events
-- Family Collaboration for invitations, permissions, activity, and comments
+- Family Collaboration for invitations, invite acceptance, permissions, activity, and comments
 - AI Care Engine for context-grounded assistant answers and daily briefings
 - Notifications, Realtime gateway abstraction, Dashboard aggregation, and Analytics insights
 - Shared mutation rate limiting with consistent `RATE_LIMITED` API errors

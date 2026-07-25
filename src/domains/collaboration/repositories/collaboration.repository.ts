@@ -31,7 +31,30 @@ export class SupabaseInvitationRepository implements InvitationRepository {
     throwIfSupabaseError(error); return data ? mapInvitation(data as InvitationRow) : null;
   }
   async accept(invitationId: string, acceptedBy: string): Promise<Invitation> {
-    const { data, error } = await this.supabase.from("invitations").update({ status:"accepted", accepted_at:new Date().toISOString() }).eq("id", invitationId).select("*").maybeSingle();
+    const { data: invitationData, error: invitationError } = await this.supabase
+      .from("invitations")
+      .select("*")
+      .eq("id", invitationId)
+      .maybeSingle();
+    throwIfSupabaseError(invitationError);
+    if (!invitationData) throw notFound("Invitation not found.");
+
+    const invitation = mapInvitation(invitationData as InvitationRow);
+    const { error: memberError } = await this.supabase
+      .from("care_members")
+      .upsert({
+        care_space_id: invitation.careSpaceId,
+        user_id: acceptedBy,
+        role: invitation.role,
+      });
+    throwIfSupabaseError(memberError);
+
+    const { data, error } = await this.supabase
+      .from("invitations")
+      .update({ status:"accepted", accepted_at:new Date().toISOString() })
+      .eq("id", invitationId)
+      .select("*")
+      .maybeSingle();
     throwIfSupabaseError(error); if (!data) throw notFound("Invitation not found."); return mapInvitation(data as InvitationRow);
   }
   async list(careSpaceId: string): Promise<Invitation[]> {
