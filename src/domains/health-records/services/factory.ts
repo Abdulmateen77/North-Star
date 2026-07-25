@@ -1,6 +1,8 @@
 import { createOpenAIClient } from "@/lib/openai/client";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getEnv } from "@/lib/env";
+import { CompositeEventPublisher, LoggingEventPublisher } from "@/shared/events/event-publisher";
+import { SupabaseTimelineRepository, TimelineEventPublisher, TimelineService } from "@/domains/timeline";
 
 import { DocumentAgent, type OpenAIChatCompletionClient } from "../agents/document.agent";
 import { HealthRecordController } from "../controllers/health-record.controller";
@@ -12,7 +14,6 @@ import {
 } from "../repositories/document.repository";
 import { SupabaseInstructionRepository } from "../repositories/instruction.repository";
 import { SupabaseMedicationRepository } from "../repositories/medication.repository";
-import { LoggingDomainEventPublisher } from "../types/events";
 import { AnalysisService } from "./analysis.service";
 import { DocumentService } from "./document.service";
 import { HealthRecordService } from "./health-record.service";
@@ -34,7 +35,11 @@ function createLazyOpenAIChatClient(): OpenAIChatCompletionClient {
 export function createHealthRecordService(): HealthRecordService {
   const env = getEnv();
   const supabase = createSupabaseServerClient();
-  const events = new LoggingDomainEventPublisher();
+  const timeline = new TimelineService(new SupabaseTimelineRepository(supabase));
+  const events = new CompositeEventPublisher([
+    new LoggingEventPublisher(),
+    new TimelineEventPublisher(timeline),
+  ]);
 
   const documentRepository = new SupabaseDocumentRepository(supabase);
   const analysisRepository = new SupabaseDocumentAnalysisRepository(supabase);

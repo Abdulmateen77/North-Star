@@ -1,68 +1,23 @@
-import type { DocumentAnalysisResult } from "./analysis";
+import type { DomainEvent, DomainEventPublisher } from "@/shared/events/domain-events";
+import { InMemoryEventPublisher, LoggingEventPublisher } from "@/shared/events/event-publisher";
+
 import type { HealthcareDocument } from "./models";
 
-export type HealthRecordDomainEvent =
-  | {
-      type: "DocumentUploaded";
-      careSpaceId: string;
-      documentId: string;
-      uploadedBy: string;
-      occurredAt: string;
-    }
-  | {
-      type: "DocumentAnalyzed";
-      careSpaceId: string;
-      documentId: string;
-      documentType: string | null;
-      confidence: number;
-      occurredAt: string;
-    }
-  | {
-      type: "MedicalRecordCreated";
-      careSpaceId: string;
-      documentId: string;
-      analysis: DocumentAnalysisResult;
-      occurredAt: string;
-    }
-  | {
-      type: "AppointmentDetected";
-      careSpaceId: string;
-      documentId: string;
-      appointmentDate: string | null;
-      occurredAt: string;
-    }
-  | {
-      type: "MedicationDetected";
-      careSpaceId: string;
-      documentId: string;
-      medicationName: string;
-      occurredAt: string;
-    }
-  | {
-      type: "DocumentDeleted";
-      careSpaceId: string;
-      documentId: string;
-      deletedBy: string;
-      occurredAt: string;
-    };
+export type HealthRecordDomainEvent = Extract<
+  DomainEvent,
+  | { type: "DocumentUploaded" }
+  | { type: "DocumentAnalyzed" }
+  | { type: "MedicalRecordCreated" }
+  | { type: "AppointmentDetected" }
+  | { type: "MedicationDetected" }
+  | { type: "DocumentDeleted" }
+>;
 
-export interface DomainEventPublisher {
-  publish(event: HealthRecordDomainEvent): Promise<void> | void;
-}
+export type { DomainEventPublisher };
 
-export class InMemoryDomainEventPublisher implements DomainEventPublisher {
-  readonly events: HealthRecordDomainEvent[] = [];
+export class InMemoryDomainEventPublisher extends InMemoryEventPublisher {}
 
-  publish(event: HealthRecordDomainEvent): void {
-    this.events.push(event);
-  }
-}
-
-export class LoggingDomainEventPublisher implements DomainEventPublisher {
-  async publish(event: HealthRecordDomainEvent): Promise<void> {
-    console.log(JSON.stringify({ domain: "health-records", event }));
-  }
-}
+export class LoggingDomainEventPublisher extends LoggingEventPublisher {}
 
 export function documentUploadedEvent(document: HealthcareDocument): HealthRecordDomainEvent {
   return {

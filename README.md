@@ -95,6 +95,11 @@ Implemented foundation code includes:
 - CRUD APIs for users, care spaces, and care members
 - Supabase migration for `profiles`, `care_spaces`, and `care_members`
 - Health Records bounded context for healthcare document uploads, text extraction, AI analysis, normalized medical record persistence, signed retrieval URLs, and downstream domain events
+- Care Management for tasks, reminders, assignments, and completion events
+- Append-only Timeline feed projected from typed domain events
+- Family Collaboration for invitations, permissions, activity, and comments
+- AI Care Engine for context-grounded assistant answers and daily briefings
+- Notifications, Realtime gateway abstraction, Dashboard aggregation, and Analytics insights
 
 See `docs/backend-api.md` for the implemented API surface.
 
