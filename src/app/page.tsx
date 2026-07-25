@@ -86,8 +86,48 @@ export default function HomePage() {
             tone="olive"
           />
         </section>
+
+        <Footer />
       </div>
     </main>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="animate-fade-up mt-20 border-t border-bone-300/60 pt-8">
+      <div className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-start">
+        <div className="text-center sm:text-left">
+          <Logo />
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-olive-500">
+            Helping families make sense of care, together.
+          </p>
+        </div>
+
+        <nav
+          aria-label="Footer"
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium text-olive-600"
+        >
+          <Link href="/dashboard" className="transition hover:text-olive-900">
+            Care dashboard
+          </Link>
+          <Link href="/patient" className="transition hover:text-olive-900">
+            Patient app
+          </Link>
+          <Link href="/dashboard" className="transition hover:text-olive-900">
+            Sign in
+          </Link>
+        </nav>
+      </div>
+
+      <div className="mt-8 flex flex-col-reverse items-center justify-between gap-3 border-t border-bone-300/60 pt-5 text-xs text-olive-400 sm:flex-row">
+        <p>© 2026 North Star. Built for families, not hospitals.</p>
+        <p className="max-w-md text-center sm:text-right">
+          North Star helps you understand care information — it isn&apos;t medical advice.
+          For emergencies, call 999.
+        </p>
+      </div>
+    </footer>
   );
 }
 
