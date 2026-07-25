@@ -1,18 +1,18 @@
 /**
- * Seeds a real test user in the live Supabase project and signs them in.
+ * Seeds a real test profile in the live Supabase project.
  *
- * Prints an access token that can be used as `Authorization: Bearer <token>`
- * against the local API. Intended for development smoke-testing only.
+ * There is no sign-in flow — the backend acts as whichever profile row was
+ * created earliest (see src/services/auth.service.ts), so this script just
+ * needs to exist once per project. Intended for local development only.
  *
  * Usage: node --env-file=.env.local scripts/seed-test-user.mjs
  */
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!url || !anonKey || !serviceKey) {
+if (!url || !serviceKey) {
   console.error("Missing Supabase env vars. Run with: node --env-file=.env.local");
   process.exit(1);
 }
@@ -64,26 +64,11 @@ async function ensureProfile(user) {
   console.log("profile upserted");
 }
 
-async function signIn() {
-  const anon = createClient(url, anonKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-  const { data, error } = await anon.auth.signInWithPassword({
-    email: EMAIL,
-    password: PASSWORD,
-  });
-  if (error) throw error;
-  return data.session;
-}
-
 const user = await ensureUser();
 await ensureProfile(user);
-const session = await signIn();
 
 console.log("\n--- SEED RESULT ---");
 console.log(JSON.stringify({
   userId: user.id,
   email: EMAIL,
-  password: PASSWORD,
-  accessToken: session.access_token,
 }, null, 2));

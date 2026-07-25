@@ -13,8 +13,16 @@ function actorAndSource(event: DomainEvent): AuditActor {
       return { actorId: event.assignedBy, sourceDomain: "care-management", sourceId: event.taskId };
     case "TaskCompleted":
       return { actorId: event.completedBy, sourceDomain: "care-management", sourceId: event.taskId };
+    case "TaskUpdated":
+      return { actorId: event.updatedBy, sourceDomain: "care-management", sourceId: event.taskId };
+    case "TaskDeleted":
+      return { actorId: event.deletedBy, sourceDomain: "care-management", sourceId: event.taskId };
     case "ReminderCreated":
       return { actorId: event.createdBy, sourceDomain: "care-management", sourceId: event.reminderId };
+    case "ReminderUpdated":
+      return { actorId: event.updatedBy, sourceDomain: "care-management", sourceId: event.reminderId };
+    case "ReminderDeleted":
+      return { actorId: event.deletedBy, sourceDomain: "care-management", sourceId: event.reminderId };
     case "ReminderTriggered":
       return { actorId: null, sourceDomain: "care-management", sourceId: event.reminderId };
     case "ReminderMissed":

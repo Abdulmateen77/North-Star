@@ -16,7 +16,7 @@ export class TimelineController {
 
   async list(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor(request);
+      const actor = await getDefaultActor();
       const query = listTimelineQuerySchema.parse(queryObject(request));
       const result = await this.service.listFeed(actor.id, {
         careSpaceId: query.careSpaceId,
@@ -35,7 +35,7 @@ export class TimelineController {
 
   async get(request: Request, context: TimelineEventRouteContext): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor(request);
+      const actor = await getDefaultActor();
       const params = validateParams(await resolveRouteParams(context.params), timelineEventIdParamSchema);
       const event = await this.service.getEvent(actor.id, params.id);
       return jsonResponse({ event });

@@ -1,46 +1,25 @@
 /**
  * End-to-end smoke test against the live API + real Supabase project.
  *
- * Signs in as the seeded test user, then exercises the real vertical slice:
- * create care space -> create task -> list tasks -> complete task ->
- * read timeline -> read dashboard -> read audit logs.
+ * There is no sign-in flow — every request acts as the single seeded profile
+ * (scripts/seed-test-user.mjs). Exercises the real vertical slice: create
+ * care space -> create task -> list tasks -> complete task -> read timeline
+ * -> read dashboard -> read audit logs.
  *
  * Usage: node --env-file=.env.local scripts/e2e-smoke.mjs
  */
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BASE = process.env.API_BASE ?? "http://localhost:3000";
 
-const EMAIL = process.env.SEED_EMAIL ?? "caregiver@northstar.test";
-const PASSWORD = process.env["SEED_" + "PASSWORD"] ?? "NorthStarDev!2026";
-
-const anon = createClient(url, anonKey, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
-
-const { data: signIn, error: signInError } = await anon.auth.signInWithPassword({
-  email: EMAIL,
-  password: PASSWORD,
-});
-if (signInError) {
-  console.error("sign-in failed:", signInError.message);
-  process.exit(1);
-}
-
-const token = signIn.session.access_token;
-const userId = signIn.user.id;
 let failures = 0;
 
 async function call(label, method, path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(body ? { "Content-Type": "application/json" } : {}),
-    },
+    headers: body ? { "Content-Type": "application/json" } : {},
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
 
@@ -60,9 +39,7 @@ async function call(label, method, path, body) {
   return { status: res.status, body: parsed, ok };
 }
 
-console.log(`signed in as ${EMAIL} (${userId})\n`);
-
-// 1. Create a care space (this also makes the user its owner).
+// 1. Create a care space (this also makes the seeded profile its owner).
 const created = await call("create care space", "POST", "/api/care-spaces", {
   name: "Margaret's Care",
   description: "Live end-to-end verification space",

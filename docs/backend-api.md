@@ -29,7 +29,8 @@ npm run build
 
 ## Auth
 
-API routes expect an access token in the HTTP `Authorization` header using the Bearer scheme.
+There is no sign-in flow. Every request acts as the single seeded profile
+(`scripts/seed-test-user.mjs`) — this app is single-tenant.
 
 ## Security controls
 
@@ -64,9 +65,13 @@ API routes expect an access token in the HTTP `Authorization` header using the B
 - `POST /api/health-records/documents/:id/analyze`
 - `GET /api/care-management/tasks?careSpaceId=:careSpaceId`
 - `POST /api/care-management/tasks`
+- `PATCH /api/care-management/tasks/:id`
+- `DELETE /api/care-management/tasks/:id`
 - `POST /api/care-management/tasks/:id/complete`
 - `GET /api/care-management/reminders?careSpaceId=:careSpaceId`
 - `POST /api/care-management/reminders`
+- `PATCH /api/care-management/reminders/:id`
+- `DELETE /api/care-management/reminders/:id`
 - `POST /api/care-management/reminders/:id/trigger`
 - `POST /api/care-management/reminders/process-due`
 - `GET /api/timeline?careSpaceId=:careSpaceId`
@@ -186,8 +191,12 @@ Soft-deletes the document metadata only. Original uploads are not overwritten.
 Care Management owns coordination work items and reminders. It does not own source medical records.
 
 - `POST /api/care-management/tasks` creates a care task and publishes `TaskCreated` / `TaskAssigned` domain events.
+- `PATCH /api/care-management/tasks/:id` updates a task and publishes `TaskUpdated`.
+- `DELETE /api/care-management/tasks/:id` deletes a task and publishes `TaskDeleted`.
 - `POST /api/care-management/tasks/:id/complete` completes a task and publishes `TaskCompleted`.
 - `POST /api/care-management/reminders` creates a scheduled reminder.
+- `PATCH /api/care-management/reminders/:id` updates a reminder and publishes `ReminderUpdated`.
+- `DELETE /api/care-management/reminders/:id` deletes a reminder and publishes `ReminderDeleted`.
 - `POST /api/care-management/reminders/:id/trigger` marks a reminder triggered and publishes `ReminderTriggered`.
 - `POST /api/care-management/reminders/process-due` is a cron-only endpoint protected by `CRON_SECRET`. It processes due scheduled reminders, marks recent due reminders as triggered, marks stale due reminders as missed, and publishes `ReminderTriggered` / `ReminderMissed` events.
 

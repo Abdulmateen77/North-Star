@@ -48,7 +48,7 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
           id: `a-${Date.now()}`,
           author: "assistant",
           body:
-            "The patient assistant is waiting for a live care-space connection. Ask your caregiver to sign in, add records, and enable the shared patient view.",
+            "The patient assistant is waiting for a live care-space connection. Ask your caregiver to add records and enable the shared patient view.",
         },
       ]);
       setThinking(false);

@@ -44,7 +44,7 @@ export default async function DashboardPage() {
             Good morning, <Emphasis>{firstName}</Emphasis>
           </>
         }
-        description="Sign in and add records to build a live care plan from Supabase."
+        description="Add records to build a live care plan from Supabase."
       />
 
       {/* --- The briefing. The brand's loudest surface, and the first thing a

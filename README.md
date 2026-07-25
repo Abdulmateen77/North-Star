@@ -87,7 +87,7 @@ CRON_SECRET=change-me
 
 Implemented foundation code includes:
 
-- Supabase Bearer-token authentication for API routes
+- Single-tenant backend acting as one seeded profile (no sign-in flow)
 - Zod environment and request validation
 - Structured JSON logging
 - Centralized API error handling

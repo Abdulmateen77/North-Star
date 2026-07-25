@@ -141,6 +141,12 @@ export class SupabaseCareTaskRepository implements CareTaskRepository {
     if (!data) throw notFound("Care task not found.");
     return mapTaskRow(data as TaskRow);
   }
+
+  async delete(id: string): Promise<void> {
+    const { data, error } = await this.supabase.from("care_tasks").delete().eq("id", id).select("id").maybeSingle();
+    throwIfSupabaseError(error);
+    if (!data) throw notFound("Care task not found.");
+  }
 }
 
 export class SupabaseReminderRepository implements ReminderRepository {
@@ -205,5 +211,11 @@ export class SupabaseReminderRepository implements ReminderRepository {
     throwIfSupabaseError(error);
     if (!data) throw notFound("Care reminder not found.");
     return mapReminderRow(data as ReminderRow);
+  }
+
+  async delete(id: string): Promise<void> {
+    const { data, error } = await this.supabase.from("care_reminders").delete().eq("id", id).select("id").maybeSingle();
+    throwIfSupabaseError(error);
+    if (!data) throw notFound("Care reminder not found.");
   }
 }

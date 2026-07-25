@@ -53,7 +53,7 @@ export function AssistantView({
 
     try {
       if (careSpaceId === null) {
-        throw new Error("Sign in and create a care space before using chat.");
+        throw new Error("Create a care space before using chat.");
       }
 
       const answer = await askLiveAssistant(careSpaceId, trimmed);

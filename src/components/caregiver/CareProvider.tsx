@@ -10,7 +10,6 @@ import {
   type ReactNode,
 } from "react";
 
-import { useAuth } from "@/components/auth/AuthProvider";
 import {
   completeLiveTask,
   createLiveReminder,
@@ -57,10 +56,10 @@ const CareContext = createContext<CareContextValue | null>(null);
 /**
  * Holds the care plan for the whole caregiver app.
  *
- * The provider hydrates live tasks/reminders from the authenticated Supabase
- * session, then writes new tasks/reminders back through the API. Data that the
- * backend does not support as direct user-created records yet (medicines and
- * appointments) stays local-only until those endpoints exist.
+ * The provider hydrates live tasks/reminders from the backend on mount, then
+ * writes new tasks/reminders back through the API. Data that the backend does
+ * not support as direct user-created records yet (medicines and appointments)
+ * stays local-only until those endpoints exist.
  */
 export function CareProvider({
   initialTasks,
@@ -86,11 +85,8 @@ export function CareProvider({
   const [appointments, setAppointments] = useState(initialAppointments);
   const [setupKind, setSetupKind] = useState<SetupKind | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const { loading: authLoading, session } = useAuth();
 
   useEffect(() => {
-    if (authLoading || session === null) return;
-
     let active = true;
 
     loadLiveCareBootstrap()
@@ -111,13 +107,13 @@ export function CareProvider({
     return () => {
       active = false;
     };
-  }, [authLoading, session?.user.id]);
+  }, []);
 
   const addTask = useCallback(
     (task: CareTask) => {
       if (careSpaceId === null) {
         setTasks((current) => [task, ...current]);
-        setToast("Task kept locally until you sign in to a care space");
+        setToast("Task kept locally until a care space is available");
         return;
       }
 
@@ -137,7 +133,7 @@ export function CareProvider({
     (reminder: Reminder) => {
       if (careSpaceId === null) {
         setReminders((current) => [reminder, ...current]);
-        setToast("Reminder kept locally until you sign in to a care space");
+        setToast("Reminder kept locally until a care space is available");
         return;
       }
 

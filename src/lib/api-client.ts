@@ -1,12 +1,8 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-
 /**
  * Thin client for the North Star API.
  *
- * The backend authenticates every route with a Supabase access token in the
- * `Authorization` header (see src/services/auth.service.ts), so every call here
- * pulls the current session token first. Errors are normalised into ApiError so
- * callers get the backend's own `code`/`message` rather than a bare status.
+ * Errors are normalised into ApiError so callers get the backend's own
+ * `code`/`message` rather than a bare status.
  */
 
 export class ApiError extends Error {
@@ -21,16 +17,6 @@ export class ApiError extends Error {
     this.code = code;
     this.details = details;
   }
-
-  /** True when the caller is not signed in, or the token has expired. */
-  get isUnauthorized(): boolean {
-    return this.status === 401;
-  }
-}
-
-async function getAccessToken(): Promise<string | null> {
-  const { data } = await getSupabaseBrowserClient().auth.getSession();
-  return data.session?.access_token ?? null;
 }
 
 async function toApiError(response: Response): Promise<ApiError> {
@@ -52,20 +38,9 @@ async function toApiError(response: Response): Promise<ApiError> {
   return new ApiError(response.status, code, message, details);
 }
 
-async function request<T>(
-  path: string,
-  init: RequestInit & { requireAuth?: boolean } = {},
-): Promise<T> {
-  const { requireAuth = true, headers, ...rest } = init;
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const { headers, ...rest } = init;
   const finalHeaders = new Headers(headers);
-
-  if (requireAuth) {
-    const token = await getAccessToken();
-    if (!token) {
-      throw new ApiError(401, "UNAUTHORIZED", "You are not signed in.");
-    }
-    finalHeaders.set("Authorization", `Bearer ${token}`);
-  }
 
   if (rest.body !== undefined && !finalHeaders.has("Content-Type")) {
     finalHeaders.set("Content-Type", "application/json");

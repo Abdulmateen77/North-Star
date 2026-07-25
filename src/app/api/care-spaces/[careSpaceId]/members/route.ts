@@ -22,7 +22,7 @@ export async function GET(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor(request);
+    const actor = await getDefaultActor();
     const careSpaceId = await getCareSpaceId(context);
     const careMembers = await createCareSpaceService().listCareMembers(
       actor,
@@ -38,7 +38,7 @@ export async function POST(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor(request);
+    const actor = await getDefaultActor();
     const careSpaceId = await getCareSpaceId(context);
     const input = await parseJsonBody(request, createCareMemberSchema);
     const careMember = await createCareSpaceService().addCareMember(

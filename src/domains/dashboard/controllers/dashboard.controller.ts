@@ -8,7 +8,7 @@ export class DashboardController {
   constructor(private readonly aggregator: DashboardAggregator) {}
   async get(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor(request);
+      const actor = await getDefaultActor();
       const query = dashboardQuerySchema.parse(Object.fromEntries(new URL(request.url).searchParams.entries()));
       const dashboard = await this.aggregator.getDashboard(actor.id, query.careSpaceId);
       return jsonResponse(dashboard);

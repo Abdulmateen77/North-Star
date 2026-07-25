@@ -24,7 +24,7 @@ export async function GET(
   context: CareMemberRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor(request);
+    const actor = await getDefaultActor();
     const { careSpaceId, careMemberId } = await getIds(context);
     const careMember = await createCareSpaceService().getCareMember(
       actor,
@@ -41,7 +41,7 @@ export async function PATCH(
   context: CareMemberRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor(request);
+    const actor = await getDefaultActor();
     const { careSpaceId, careMemberId } = await getIds(context);
     const input = await parseJsonBody(request, updateCareMemberSchema);
     const careMember = await createCareSpaceService().updateCareMember(
@@ -60,7 +60,7 @@ export async function DELETE(
   context: CareMemberRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor(request);
+    const actor = await getDefaultActor();
     const { careSpaceId, careMemberId } = await getIds(context);
     await createCareSpaceService().removeCareMember(actor, careSpaceId, careMemberId);
 

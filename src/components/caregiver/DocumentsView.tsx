@@ -10,7 +10,6 @@ import { Card } from "@/components/ui/Card";
 import { StarMark } from "@/components/ui/Logo";
 import { cn } from "@/components/ui/cn";
 import type { CareDocument, DocumentKind } from "@/data/types";
-import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 const kindLabels: Record<DocumentKind, string> = {
   "discharge-summary": "Discharge summary",
@@ -51,12 +50,8 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
 
       try {
         if (careSpaceId === null) {
-          throw new Error("Sign in and create a care space before uploading documents.");
+          throw new Error("Create a care space before uploading documents.");
         }
-
-        const { data } = await getSupabaseBrowserClient().auth.getSession();
-        const token = data.session?.access_token;
-        if (!token) throw new Error("You are not signed in.");
 
         const form = new FormData();
         form.set("careSpaceId", careSpaceId);
@@ -64,7 +59,6 @@ export function DocumentsView({ documents }: { documents: CareDocument[] }) {
 
         const response = await fetch("/api/health-records/documents", {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
           body: form,
         });
 

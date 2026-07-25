@@ -11,7 +11,7 @@ export class AICareEngineController {
 
   async chat(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor(request);
+      const actor = await getDefaultActor();
       const input = await parseJsonBody(request, assistantChatSchema);
       const response = await this.assistant.chat(actor.id, input);
       return jsonResponse(response);
@@ -20,7 +20,7 @@ export class AICareEngineController {
 
   async briefingForToday(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor(request);
+      const actor = await getDefaultActor();
       const input = await parseJsonBody(request, briefingSchema);
       const response = await this.briefing.generateDailyBriefing(actor.id, input);
       return jsonResponse(response);

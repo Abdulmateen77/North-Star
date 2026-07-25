@@ -13,6 +13,7 @@ export interface CareTaskRepository {
   findById(id: string): Promise<CareTask | null>;
   list(filters: CareTaskListFilters): Promise<CareTask[]>;
   update(id: string, patch: Partial<CareTask>): Promise<CareTask>;
+  delete(id: string): Promise<void>;
 }
 
 export interface ReminderRepository {
@@ -20,4 +21,5 @@ export interface ReminderRepository {
   findById(id: string): Promise<CareReminder | null>;
   list(filters: CareReminderListFilters): Promise<CareReminder[]>;
   update(id: string, patch: Partial<CareReminder>): Promise<CareReminder>;
+  delete(id: string): Promise<void>;
 }
