@@ -1,5 +1,27 @@
 import { z } from "zod";
 
+/**
+ * Environment files commonly contain blank assignments (`OPENAI_API_KEY=`) for
+ * values the operator has not filled in yet. Node surfaces those as empty
+ * strings rather than absent keys, which would otherwise fail `.min(1)` and
+ * `.default()` checks and take down every API route, since `getEnv()` validates
+ * the entire schema on any request. Blank/whitespace-only values are therefore
+ * normalised to `undefined` so optional vars stay optional and defaults apply.
+ */
+function blankToUndefined(source: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const normalized: Record<string, string | undefined> = {};
+
+  for (const [key, value] of Object.entries(source)) {
+    if (typeof value === "string" && value.trim() === "") {
+      continue;
+    }
+
+    normalized[key] = value;
+  }
+
+  return normalized as NodeJS.ProcessEnv;
+}
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -26,7 +48,7 @@ export type Env = z.infer<typeof envSchema>;
 let cachedEnv: Env | null = null;
 
 export function parseEnv(source: NodeJS.ProcessEnv): Env {
-  const result = envSchema.safeParse(source);
+  const result = envSchema.safeParse(blankToUndefined(source));
 
   if (!result.success) {
     const issues = result.error.issues
