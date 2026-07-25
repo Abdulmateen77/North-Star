@@ -98,7 +98,7 @@ const priorityTone: Record<TaskPriority, BadgeTone> = {
 };
 
 function TaskBoard() {
-  const { tasks, people, setTaskStatus, openSetup } = useCare();
+  const { tasks, people, setTaskStatus } = useCare();
   const [assigneeFilter, setAssigneeFilter] = useState<string | null>(null);
 
   const visible = useMemo(
@@ -120,28 +120,23 @@ function TaskBoard() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="no-scrollbar flex gap-2 overflow-x-auto">
+      {/* Filters only — adding is the shell's "Add" button, not a second
+          button competing with it here. */}
+      <div className="no-scrollbar flex gap-2 overflow-x-auto">
+        <FilterChip
+          active={assigneeFilter === null}
+          onClick={() => setAssigneeFilter(null)}
+          label={`Everyone (${openCount} open)`}
+        />
+        {people.map((person) => (
           <FilterChip
-            active={assigneeFilter === null}
-            onClick={() => setAssigneeFilter(null)}
-            label={`Everyone (${openCount} open)`}
+            key={person.id}
+            active={assigneeFilter === person.id}
+            onClick={() => setAssigneeFilter(person.id)}
+            label={person.fullName.split(" ")[0]}
+            avatar={<Avatar initials={person.initials} accent={person.accent} size="xs" />}
           />
-          {people.map((person) => (
-            <FilterChip
-              key={person.id}
-              active={assigneeFilter === person.id}
-              onClick={() => setAssigneeFilter(person.id)}
-              label={person.fullName.split(" ")[0]}
-              avatar={<Avatar initials={person.initials} accent={person.accent} size="xs" />}
-            />
-          ))}
-        </div>
-
-        <Button size="sm" variant="soft" onClick={() => openSetup("task")}>
-          <Plus size={15} />
-          New task
-        </Button>
+        ))}
       </div>
 
       <div className="stagger mt-6 grid gap-5 lg:grid-cols-3">

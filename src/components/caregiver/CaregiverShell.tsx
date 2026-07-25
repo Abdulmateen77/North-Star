@@ -21,6 +21,8 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/components/ui/cn";
 
+import { SetupButton } from "./SetupButton";
+
 const navItems = [
   { href: "/dashboard", label: "Today", icon: Home },
   { href: "/care", label: "Care plan", icon: ListChecks },
@@ -66,7 +68,10 @@ export function CaregiverShell({
 
         <CareReceiverCard receiver={receiver} className="mt-7" />
 
-        <nav className="mt-7 flex-1 space-y-1">
+        {/* The one and only entry point for adding anything. */}
+        <SetupButton className="mt-5 w-full" />
+
+        <nav className="mt-6 flex-1 space-y-1">
           {navItems.map((item) => (
             <NavLink key={item.href} {...item} active={isActive(pathname, item.href)} />
           ))}
@@ -88,14 +93,17 @@ export function CaregiverShell({
         <Link href="/">
           <Logo />
         </Link>
-        <button
-          type="button"
-          onClick={() => setDrawerOpen(true)}
-          className="grid size-10 place-items-center rounded-full text-olive-600 transition hover:bg-bone-200"
-          aria-label="Open navigation"
-        >
-          <Menu size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          <SetupButton />
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="grid size-10 place-items-center rounded-full text-olive-600 transition hover:bg-bone-200"
+            aria-label="Open navigation"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
       </header>
 
       {/* --- Mobile drawer -------------------------------------------------- */}

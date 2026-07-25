@@ -19,31 +19,33 @@ import type {
 
 import { useCare, type SetupKind } from "./CareProvider";
 
-const sheetMeta: Record<SetupKind, { title: string; blurb: string; icon: typeof ListPlus }> = {
+const sheetMeta: Record<SetupKind, { label: string; blurb: string; icon: typeof ListPlus }> = {
   task: {
-    title: "Add a task",
+    label: "Task",
     blurb: "Something the family needs to do. Assign it and it appears on their list.",
     icon: ListPlus,
   },
   reminder: {
-    title: "Set a reminder",
+    label: "Reminder",
     blurb: "Margaret gets a gentle nudge, and you'll see when she confirms it.",
     icon: AlarmClock,
   },
   medicine: {
-    title: "Add a medicine",
+    label: "Medicine",
     blurb: "It joins her daily checklist at the times you choose.",
     icon: Pill,
   },
   appointment: {
-    title: "Add an appointment",
+    label: "Appointment",
     blurb: "Everyone sees it, and you can say who's taking her.",
     icon: CalendarPlus,
   },
 };
 
+const setupKinds: SetupKind[] = ["task", "reminder", "medicine", "appointment"];
+
 export function QuickSetupSheet() {
-  const { setupKind, closeSetup } = useCare();
+  const { setupKind, openSetup, closeSetup } = useCare();
 
   // Escape closes, and the page behind shouldn't scroll while it's open.
   useEffect(() => {
@@ -65,7 +67,6 @@ export function QuickSetupSheet() {
   if (setupKind === null) return null;
 
   const meta = sheetMeta[setupKind];
-  const Icon = meta.icon;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
@@ -79,17 +80,19 @@ export function QuickSetupSheet() {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={meta.title}
+        aria-label={`Add a ${meta.label.toLowerCase()} to Margaret's care`}
         className="animate-rise relative flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-panel bg-bone-50 shadow-deep sm:rounded-panel"
       >
-        {/* Header carries the brand mesh so even a form feels considered. */}
-        <div className="mesh-rise relative shrink-0 px-6 py-6">
-          <div className="flex items-start gap-3.5">
-            <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-olive-900/85 text-gold-200">
-              <Icon size={20} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-xl font-bold tracking-tight text-olive-900">{meta.title}</h2>
+        {/* Header carries the brand mesh so even a form feels considered.
+            The type picker lives here rather than on a separate step: there is
+            exactly one way into this sheet, so choosing what to add and filling
+            it in have to happen in the same view. */}
+        <div className="mesh-rise relative shrink-0 px-6 pt-5 pb-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold tracking-tight text-olive-900">
+                Add to Margaret&apos;s care
+              </h2>
               <p className="mt-1 text-sm leading-relaxed text-olive-700">{meta.blurb}</p>
             </div>
             <button
@@ -100,6 +103,33 @@ export function QuickSetupSheet() {
             >
               <X size={18} />
             </button>
+          </div>
+
+          <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto" role="tablist">
+            {setupKinds.map((kind) => {
+              const item = sheetMeta[kind];
+              const ItemIcon = item.icon;
+              const active = kind === setupKind;
+
+              return (
+                <button
+                  key={kind}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => openSetup(kind)}
+                  className={cn(
+                    "inline-flex shrink-0 items-center gap-1.5 rounded-pill px-3.5 py-2 text-sm font-medium transition duration-200",
+                    active
+                      ? "bg-olive-900 text-bone-50"
+                      : "bg-white/65 text-olive-700 hover:bg-white/90",
+                  )}
+                >
+                  <ItemIcon size={15} />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

@@ -1,6 +1,14 @@
 "use client";
 
-import { Check, ChevronRight, Clock, Footprints, MapPin, Pill, Sun } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Footprints,
+  MapPin,
+  Pill,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -63,17 +71,19 @@ export function TodayCompanion({
     })),
   ]);
 
+  const [showDone, setShowDone] = useState(false);
+
   const doneCount = items.filter((item) => item.done).length;
   const remaining = items.length - doneCount;
 
-  const { next, rest } = useMemo(() => {
+  const { next, laterItems, doneItems } = useMemo(() => {
     const pending = items.filter((item) => !item.done);
     const nextItem = pending[0] ?? null;
-    const remainder = items.filter((item) => item.id !== nextItem?.id);
 
     return {
       next: nextItem,
-      rest: [...remainder].sort((a, b) => Number(a.done) - Number(b.done)),
+      laterItems: pending.filter((item) => item.id !== nextItem?.id),
+      doneItems: items.filter((item) => item.done),
     };
   }, [items]);
 
@@ -153,17 +163,47 @@ export function TodayCompanion({
         </section>
       ) : null}
 
-      {/* --- Everything else, quiet ------------------------------------------- */}
-      {rest.length > 0 ? (
+      {/* --- Still to come ---------------------------------------------------- */}
+      {laterItems.length > 0 ? (
         <section className="animate-fade-up mt-8" style={{ animationDelay: "0.16s" }}>
           <h2 className="px-1 text-sm font-medium tracking-wide text-olive-400 uppercase">
-            The rest of today
+            Later today
           </h2>
           <ul className="mt-3 space-y-2.5">
-            {rest.map((item) => (
+            {laterItems.map((item) => (
               <QuietRow key={item.id} item={item} onToggle={() => toggle(item.id)} />
             ))}
           </ul>
+        </section>
+      ) : null}
+
+      {/* Finished items are folded away — they're reassurance, not something
+          she needs to scroll past to reach what's left. */}
+      {doneItems.length > 0 ? (
+        <section className="animate-fade-up mt-6" style={{ animationDelay: "0.2s" }}>
+          <button
+            type="button"
+            onClick={() => setShowDone((open) => !open)}
+            aria-expanded={showDone}
+            className="flex min-h-12 w-full items-center justify-between rounded-panel px-1 text-olive-600 transition hover:text-olive-900"
+          >
+            <span className="flex items-center gap-2">
+              <Check size={17} strokeWidth={3} className="text-olive-500" />
+              {doneItems.length} done today
+            </span>
+            <ChevronDown
+              size={18}
+              className={cn("transition-transform duration-300", showDone && "rotate-180")}
+            />
+          </button>
+
+          {showDone ? (
+            <ul className="mt-2 space-y-2.5">
+              {doneItems.map((item) => (
+                <QuietRow key={item.id} item={item} onToggle={() => toggle(item.id)} />
+              ))}
+            </ul>
+          ) : null}
         </section>
       ) : null}
 
