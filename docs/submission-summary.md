@@ -9,9 +9,11 @@
 
 ## Inspiration
 
-5.8 million people in the UK provide unpaid care for a family member — worth £184.3 billion a year to the economy, more than the entire NHS budget. None of that runs on purpose-built software. It runs on WhatsApp groups, paper notes on the fridge, and one person's memory holding together a stack of hospital letters nobody else in the family has read.
+It started with a conversation, not a statistic. We reached out to a friend whose grandparents don't live nearby — they're a real distance away, not down the road — and asked how the family keeps up with how they're doing. The honest answer was: they mostly don't. Nobody's there day-to-day to notice a missed appointment or a change in how they're coping, and there's no shared record anyone in the family can check — just occasional phone calls and whoever last happened to visit filling everyone else in from memory.
 
-We built North Star around a single moment: a caregiver holding a discharge letter, trying to work out what actually changed and what happens now — and the person the letter is *about*, who needs something far simpler than a dashboard.
+That's not a niche problem. 5.8 million people in the UK provide unpaid care for a family member — worth £184.3 billion a year to the economy, more than the entire NHS budget — and most of it, near or far, runs on WhatsApp groups, paper notes on the fridge, and one person's memory. Being physically distant just makes the gap worse: there's no fridge to see the note on.
+
+We built North Star around two people who are often not in the same room: a caregiver holding a discharge letter, trying to work out what actually changed and what happens now, and family further away who just want to know how things are going without having to ask. It's why the demo's family circle includes someone in exactly that position — a sister who lives apart and checks in through the shared timeline rather than being there in person — not as an edge case, but because that's who this needs to work for.
 
 ## What it does
 
