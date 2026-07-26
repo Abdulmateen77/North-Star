@@ -52,7 +52,7 @@ export default async function CirclePage() {
     <PageBody>
       <PageHeader
         eyebrow="Family care circle"
-        title="Care circle"
+        title="Who's looking after Margaret"
         description="Everyone in the circle sees the same picture. What they can change depends on their role."
         action={
           <Button>
@@ -62,7 +62,7 @@ export default async function CirclePage() {
         }
       />
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
         {/* --- Members ------------------------------------------------------- */}
         <div className="stagger space-y-4 lg:col-span-2">
           {members.map((person) => {

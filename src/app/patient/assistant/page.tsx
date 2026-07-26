@@ -7,7 +7,7 @@ export default async function PatientAssistantPage() {
 
   return (
     <PatientAssistant
-      greeting={`Hello ${firstName}. You can ask me anything saved in your North Star care space.\n\nI'll keep it simple, and I'll tell you when something is better asked of your caregiver or doctor.`}
+      greeting={`Hello ${firstName}. You can ask me anything about your medicines, your appointments, or your exercises.\n\nI'll keep it simple, and I'll tell you when something is better asked of Amara or your doctor.`}
     />
   );
 }

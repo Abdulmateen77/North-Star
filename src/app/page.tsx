@@ -29,6 +29,12 @@ export default function HomePage() {
 
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-7">
         <Logo />
+        <Link
+          href="/dashboard"
+          className="text-sm font-medium text-olive-600 transition hover:text-olive-900"
+        >
+          Sign in
+        </Link>
       </header>
 
       <div className="mx-auto w-full max-w-6xl px-6 pb-24">
@@ -50,17 +56,17 @@ export default function HomePage() {
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <ButtonLink href="/dashboard" size="lg">
-              Open the care dashboard
+              See their care
               <ArrowRight size={17} />
             </ButtonLink>
             <ButtonLink href="/patient" variant="outline" size="lg">
-              I&apos;m the one being cared for
+              See my health
             </ButtonLink>
           </div>
         </section>
 
         <section
-          className="animate-fade-up grid gap-5 sm:grid-cols-2"
+          className="animate-fade-up grid grid-cols-1 gap-5 sm:grid-cols-2"
           style={{ animationDelay: "0.12s" }}
         >
           <RoleDoor
@@ -80,8 +86,48 @@ export default function HomePage() {
             tone="olive"
           />
         </section>
+
+        <Footer />
       </div>
     </main>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="animate-fade-up mt-20 border-t border-bone-300/60 pt-8">
+      <div className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-start">
+        <div className="text-center sm:text-left">
+          <Logo />
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-olive-500">
+            Helping families make sense of care, together.
+          </p>
+        </div>
+
+        <nav
+          aria-label="Footer"
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium text-olive-600"
+        >
+          <Link href="/dashboard" className="transition hover:text-olive-900">
+            Care dashboard
+          </Link>
+          <Link href="/patient" className="transition hover:text-olive-900">
+            Patient app
+          </Link>
+          <Link href="/dashboard" className="transition hover:text-olive-900">
+            Sign in
+          </Link>
+        </nav>
+      </div>
+
+      <div className="mt-8 flex flex-col-reverse items-center justify-between gap-3 border-t border-bone-300/60 pt-5 text-xs text-olive-400 sm:flex-row">
+        <p>© 2026 North Star. Built for families, not hospitals.</p>
+        <p className="max-w-md text-center sm:text-right">
+          North Star helps you understand care information — it isn&apos;t medical advice.
+          For emergencies, call 999.
+        </p>
+      </div>
+    </footer>
   );
 }
 

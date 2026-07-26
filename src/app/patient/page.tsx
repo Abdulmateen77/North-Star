@@ -9,7 +9,7 @@ export default async function PatientTodayPage() {
     getCareReceiver(),
   ]);
 
-  // Only the things the care receiver does themself belong on this screen.
+  // Only the things Margaret does herself belong on her screen.
   const herTasks = tasks.filter((task) => task.assigneeId === receiver.id);
 
   return (

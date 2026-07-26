@@ -42,6 +42,15 @@ export interface CareReceiver extends CarePerson {
   allergies: string[];
   bloodType: string | null;
   nhsNumber: string | null;
+  /** The GP who manages day-to-day prescribing. */
+  gpName: string | null;
+  gpPractice: string | null;
+  /** The specialist overseeing the current episode of care. */
+  consultantName: string | null;
+  hospital: string | null;
+  /** What most recently changed medically, e.g. "Right total hip replacement". */
+  recentProcedure: string | null;
+  recentProcedureDate: string | null;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -204,6 +213,8 @@ export interface CareDocument {
   aiSummary: string | null;
   /** Structured facts the AI pulled out, rendered as chips. */
   extractedFacts: ExtractedFact[];
+  /** The transcribed letter itself, shown behind a "Full letter" toggle. */
+  fullText: string | null;
   /** Ids of tasks the AI generated from this document. */
   generatedTaskIds: string[];
   /** 0–100 while `status` is `uploading` or `analysing`. */

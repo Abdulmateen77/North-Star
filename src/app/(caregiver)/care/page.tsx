@@ -1,10 +1,11 @@
 import { CarePlanView } from "@/components/caregiver/CarePlanView";
 import { PageBody, PageHeader } from "@/components/caregiver/PageHeader";
-import { SetupButton } from "@/components/caregiver/SetupButton";
 
 /**
  * The care plan reads everything from `CareProvider` (set up in the caregiver
- * layout), so anything added from another screen is already here.
+ * layout), so anything added from another screen is already here. Adding is
+ * done from the shell's single "Add" button — this page deliberately has no
+ * add button of its own.
  */
 export default function CarePlanPage() {
   return (
@@ -12,8 +13,7 @@ export default function CarePlanPage() {
       <PageHeader
         eyebrow="Care plan"
         title="Everything that needs doing"
-        description="Tasks the care circle is sharing, reminders, and what's coming up."
-        action={<SetupButton kind="task" label="Set something up" />}
+        description="Tasks the family is sharing, the medicines Margaret takes, and what's coming up."
       />
       <CarePlanView />
     </PageBody>

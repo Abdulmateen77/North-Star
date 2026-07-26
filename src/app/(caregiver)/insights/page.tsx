@@ -50,7 +50,7 @@ export default async function InsightsPage() {
       <PageHeader
         eyebrow="Insights & alerts"
         title="What's changed this week"
-        description="Patterns North Star notices across live medicines, appointments and readings."
+        description="Patterns North Star noticed across Margaret's medicines, appointments and readings."
       />
 
       {/* --- Weekly summary --------------------------------------------------- */}
@@ -60,17 +60,19 @@ export default async function InsightsPage() {
             <StarMark size={17} />
           </span>
           <div>
-            <p className="text-sm font-medium text-olive-900">Live summary</p>
-            <p className="text-xs text-olive-400">Generated from saved data</p>
+            <p className="text-sm font-medium text-olive-900">This week in summary</p>
+            <p className="text-xs text-olive-400">19–25 July</p>
           </div>
         </div>
 
         <p className="mt-5 max-w-3xl text-lg leading-relaxed text-pretty text-olive-800">
-          No live insight summary is available yet.
+          Margaret has had a good week. Her blood tests came back better than April&apos;s, her
+          blood pressure has settled since the Ramipril change, and David logged her walking
+          to the gate without the frame — a first since the operation.
         </p>
         <p className="mt-3 max-w-3xl leading-relaxed text-pretty text-olive-600">
-          Add documents, tasks, reminders, and timeline events to let North Star surface
-          care patterns here.
+          Two small things for whenever suits: the six-week orthopaedic follow-up still
+          needs booking, and her Ramipril is worth reordering soon.
         </p>
       </Card>
 
@@ -81,7 +83,7 @@ export default async function InsightsPage() {
             <AlertCircle size={19} className="text-clay-500" />
             Needs attention
           </h2>
-          <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {attention.map((insight) => (
               <InsightCard key={insight.id} insight={insight} />
             ))}
@@ -94,7 +96,7 @@ export default async function InsightsPage() {
         <h2 className="text-xl text-olive-900">Care trends</h2>
         <p className="mt-1.5 text-sm text-olive-600">Two weeks of readings, at a glance.</p>
 
-        <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {metrics.map((metric) => {
             const TrendIcon = trendIcons[metric.trend];
             const tone = toneStyles[metric.tone];
@@ -151,7 +153,7 @@ export default async function InsightsPage() {
       {/* --- Everything else -------------------------------------------------- */}
       <section className="mt-10">
         <h2 className="text-xl text-olive-900">Other observations</h2>
-        <div className="stagger mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {rest.map((insight) => (
             <InsightCard key={insight.id} insight={insight} />
           ))}
