@@ -1,12 +1,12 @@
 import { createCareSpaceSchema } from "@/domain/schemas";
 import { jsonResponse, withApiHandler } from "@/lib/http";
 import { parseJsonBody } from "@/lib/validation";
-import { authenticateRequest } from "@/services/auth.service";
+import { getDefaultActor } from "@/services/auth.service";
 import { createCareSpaceService } from "@/services/factory";
 
 export async function GET(request: Request): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor();
     const careSpaces = await createCareSpaceService().listCareSpaces(actor);
 
     return jsonResponse({ careSpaces });
@@ -15,7 +15,7 @@ export async function GET(request: Request): Promise<Response> {
 
 export async function POST(request: Request): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor();
     const input = await parseJsonBody(request, createCareSpaceSchema);
     const careSpace = await createCareSpaceService().createCareSpace(actor, input);
 

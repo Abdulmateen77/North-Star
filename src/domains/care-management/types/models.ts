@@ -64,6 +64,24 @@ export interface CreateCareReminderInput {
   scheduledFor: string;
 }
 
+export interface UpdateCareTaskInput {
+  title?: string;
+  description?: string | null;
+  status?: CareTaskStatus;
+  priority?: CarePriority;
+  assignedTo?: string | null;
+  dueAt?: string | null;
+}
+
+export interface UpdateCareReminderInput {
+  title?: string;
+  description?: string | null;
+  status?: CareReminderStatus;
+  priority?: CarePriority;
+  scheduledFor?: string;
+  assignedTo?: string | null;
+}
+
 export interface CareTaskListFilters {
   careSpaceId: string;
   status?: CareTaskStatus;

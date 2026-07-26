@@ -14,5 +14,11 @@ export interface DashboardSnapshot {
 }
 
 export interface DashboardResponse extends DashboardSnapshot {
-  dailyBriefing: DailyBriefing;
+  /**
+   * The AI-generated briefing, or `null` when it could not be produced (for
+   * example when no OpenAI key is configured, or the model call failed).
+   */
+  dailyBriefing: DailyBriefing | null;
+  /** True when `dailyBriefing` is null because generation failed. */
+  briefingUnavailable: boolean;
 }

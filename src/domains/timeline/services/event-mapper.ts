@@ -40,6 +40,30 @@ export function mapDomainEventToTimelineInput(event: DomainEvent): CreateTimelin
         createdAt: event.occurredAt,
         metadata: event,
       };
+    case "TaskUpdated":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: `Task updated: ${event.title}`,
+        description: null,
+        sourceDomain: "care-management",
+        sourceId: event.taskId,
+        createdBy: event.updatedBy,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
+    case "TaskDeleted":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: `Task deleted: ${event.title}`,
+        description: null,
+        sourceDomain: "care-management",
+        sourceId: event.taskId,
+        createdBy: event.deletedBy,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
     case "ReminderCreated":
     case "ReminderTriggered":
       return {
@@ -53,6 +77,42 @@ export function mapDomainEventToTimelineInput(event: DomainEvent): CreateTimelin
         createdAt: event.occurredAt,
         metadata: event,
       };
+    case "ReminderUpdated":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: `Reminder updated: ${event.title}`,
+        description: null,
+        sourceDomain: "care-management",
+        sourceId: event.reminderId,
+        createdBy: event.updatedBy,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
+    case "ReminderDeleted":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: `Reminder deleted: ${event.title}`,
+        description: null,
+        sourceDomain: "care-management",
+        sourceId: event.reminderId,
+        createdBy: event.deletedBy,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
+    case "ReminderMissed":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: `Reminder missed: ${event.title}`,
+        description: null,
+        sourceDomain: "care-management",
+        sourceId: event.reminderId,
+        createdBy: null,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
     case "FamilyMemberInvited":
       return {
         careSpaceId: event.careSpaceId,
@@ -62,6 +122,18 @@ export function mapDomainEventToTimelineInput(event: DomainEvent): CreateTimelin
         sourceDomain: "collaboration",
         sourceId: event.invitationId,
         createdBy: event.invitedBy,
+        createdAt: event.occurredAt,
+        metadata: event,
+      };
+    case "InvitationAccepted":
+      return {
+        careSpaceId: event.careSpaceId,
+        eventType: event.type,
+        title: "Invitation accepted",
+        description: null,
+        sourceDomain: "collaboration",
+        sourceId: event.invitationId,
+        createdBy: event.acceptedBy,
         createdAt: event.occurredAt,
         metadata: event,
       };

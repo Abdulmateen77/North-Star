@@ -2,7 +2,7 @@ import type { PromptRegistry } from "./types";
 
 const prompts: Record<string, string> = {
   assistant:
-    "Answer caregiver questions using only retrieved North Star platform context. Never answer from memory alone. If context is insufficient, say what is missing. Return JSON only.",
+    'Answer caregiver questions using only retrieved North Star platform context. Never answer from memory alone. If context is insufficient, say what is missing. Return JSON only with this exact shape: {"answer":"plain-language answer","sources":[{"type":"table or record type","id":"record id"}],"confidence":0.0}.',
   briefing:
     "Generate a concise daily caregiving briefing from tasks, appointments, reminders, and timeline events. No diagnosis. Return JSON only.",
   planning:

@@ -19,9 +19,16 @@ async function assertMember(supabase: SupabaseAdminClient, careSpaceId: string, 
   if (!data) throw notFound("Care space not found.");
 }
 
+async function memberRole(supabase: SupabaseAdminClient, careSpaceId: string, userId: string): Promise<CollaborationRole | null> {
+  const { data, error } = await supabase.from("care_members").select("role").eq("care_space_id", careSpaceId).eq("user_id", userId).maybeSingle();
+  throwIfSupabaseError(error);
+  return data ? ((data as { role: CollaborationRole }).role) : null;
+}
+
 export class SupabaseInvitationRepository implements InvitationRepository {
   constructor(private readonly supabase: SupabaseAdminClient) {}
   assertCareSpaceMember(careSpaceId: string, userId: string): Promise<void> { return assertMember(this.supabase, careSpaceId, userId); }
+  getMemberRole(careSpaceId: string, userId: string): Promise<CollaborationRole | null> { return memberRole(this.supabase, careSpaceId, userId); }
   async create(input: CreateInvitationInput & { invitedBy: string; token: string; expiresAt: string }): Promise<Invitation> {
     const { data, error } = await this.supabase.from("invitations").insert({ care_space_id:input.careSpaceId, email:input.email, role:input.role, invited_by:input.invitedBy, token:input.token, status:"pending", expires_at:input.expiresAt }).select("*").single();
     throwIfSupabaseError(error); return mapInvitation(data as InvitationRow);
@@ -31,7 +38,30 @@ export class SupabaseInvitationRepository implements InvitationRepository {
     throwIfSupabaseError(error); return data ? mapInvitation(data as InvitationRow) : null;
   }
   async accept(invitationId: string, acceptedBy: string): Promise<Invitation> {
-    const { data, error } = await this.supabase.from("invitations").update({ status:"accepted", accepted_at:new Date().toISOString() }).eq("id", invitationId).select("*").maybeSingle();
+    const { data: invitationData, error: invitationError } = await this.supabase
+      .from("invitations")
+      .select("*")
+      .eq("id", invitationId)
+      .maybeSingle();
+    throwIfSupabaseError(invitationError);
+    if (!invitationData) throw notFound("Invitation not found.");
+
+    const invitation = mapInvitation(invitationData as InvitationRow);
+    const { error: memberError } = await this.supabase
+      .from("care_members")
+      .upsert({
+        care_space_id: invitation.careSpaceId,
+        user_id: acceptedBy,
+        role: invitation.role,
+      });
+    throwIfSupabaseError(memberError);
+
+    const { data, error } = await this.supabase
+      .from("invitations")
+      .update({ status:"accepted", accepted_at:new Date().toISOString() })
+      .eq("id", invitationId)
+      .select("*")
+      .maybeSingle();
     throwIfSupabaseError(error); if (!data) throw notFound("Invitation not found."); return mapInvitation(data as InvitationRow);
   }
   async list(careSpaceId: string): Promise<Invitation[]> {
@@ -45,6 +75,16 @@ export class SupabasePermissionRepository implements PermissionRepository {
   async assertCareSpaceOwner(careSpaceId: string, userId: string): Promise<void> {
     const { data, error } = await this.supabase.from("care_members").select("id, role").eq("care_space_id", careSpaceId).eq("user_id", userId).maybeSingle();
     throwIfSupabaseError(error); if (!data) throw notFound("Care space not found."); if ((data as {role:string}).role !== "owner") throw forbidden("Only owners can update permissions.");
+  }
+  getMemberRole(careSpaceId: string, userId: string): Promise<CollaborationRole | null> { return memberRole(this.supabase, careSpaceId, userId); }
+  async countOwners(careSpaceId: string): Promise<number> {
+    const { count, error } = await this.supabase
+      .from("care_members")
+      .select("id", { count: "exact", head: true })
+      .eq("care_space_id", careSpaceId)
+      .eq("role", "owner");
+    throwIfSupabaseError(error);
+    return count ?? 0;
   }
   async updateRole(careSpaceId: string, userId: string, role: CollaborationRole): Promise<Permission> {
     const { error } = await this.supabase.from("care_members").update({ role }).eq("care_space_id", careSpaceId).eq("user_id", userId);

@@ -5,7 +5,7 @@ import {
   resolveRouteParams,
   validateParams,
 } from "@/lib/validation";
-import { authenticateRequest } from "@/services/auth.service";
+import { getDefaultActor } from "@/services/auth.service";
 import { createCareSpaceService } from "@/services/factory";
 
 type CareSpaceRouteContext = {
@@ -22,7 +22,7 @@ export async function GET(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor();
     const careSpaceId = await getCareSpaceId(context);
     const careMembers = await createCareSpaceService().listCareMembers(
       actor,
@@ -38,7 +38,7 @@ export async function POST(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await authenticateRequest(request);
+    const actor = await getDefaultActor();
     const careSpaceId = await getCareSpaceId(context);
     const input = await parseJsonBody(request, createCareMemberSchema);
     const careMember = await createCareSpaceService().addCareMember(

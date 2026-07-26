@@ -20,6 +20,28 @@ export const createReminderSchema = z.object({
   scheduledFor: z.string().datetime(),
 });
 
+export const updateTaskSchema = z
+  .object({
+    title: z.string().trim().min(1).max(200).optional(),
+    description: z.string().trim().max(2000).nullable().optional(),
+    status: z.enum(careTaskStatuses).optional(),
+    priority: z.enum(carePriorities).optional(),
+    assignedTo: z.string().uuid().nullable().optional(),
+    dueAt: z.string().datetime().nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, "At least one task field is required.");
+
+export const updateReminderSchema = z
+  .object({
+    title: z.string().trim().min(1).max(200).optional(),
+    description: z.string().trim().max(2000).nullable().optional(),
+    status: z.enum(careReminderStatuses).optional(),
+    priority: z.enum(carePriorities).optional(),
+    scheduledFor: z.string().datetime().optional(),
+    assignedTo: z.string().uuid().nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, "At least one reminder field is required.");
+
 export const listTasksQuerySchema = z.object({
   careSpaceId: z.string().uuid(),
   status: z.enum(careTaskStatuses).optional(),

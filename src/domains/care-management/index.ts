@@ -4,5 +4,6 @@ export * from "./repositories/care-management.repository";
 export * from "./schemas/api.schema";
 export * from "./services/care-management.service";
 export * from "./services/factory";
+export * from "./services/reminder-scheduler.service";
 export * from "./types/models";
 export * from "./types/repositories";

@@ -4,6 +4,27 @@ import { createLazyChatClient, parseJsonContent, type ChatClient } from "./opena
 import type { AssistantAgentPort } from "../types/agents";
 import type { AssistantAgentInput, AssistantAnswer } from "../types/models";
 
+function toAssistantAnswer(value: unknown, fallback: AssistantAnswer): AssistantAnswer {
+  if (typeof value !== "object" || value === null) {
+    return fallback;
+  }
+
+  const candidate = value as Partial<AssistantAnswer>;
+  if (typeof candidate.answer === "string") {
+    return {
+      answer: candidate.answer,
+      sources: Array.isArray(candidate.sources) ? candidate.sources : [],
+      confidence: typeof candidate.confidence === "number" ? candidate.confidence : 0,
+    };
+  }
+
+  return {
+    answer: JSON.stringify(value),
+    sources: [],
+    confidence: 0,
+  };
+}
+
 export class AssistantAgent implements AssistantAgentPort {
   constructor(
     private readonly prompts: PromptRegistry,
@@ -26,6 +47,7 @@ export class AssistantAgent implements AssistantAgentPort {
         { role: "user", content: JSON.stringify(input) },
       ],
     });
-    return parseJsonContent<AssistantAnswer>(completion.choices?.[0]?.message?.content, fallback);
+    const parsed = parseJsonContent<unknown>(completion.choices?.[0]?.message?.content, fallback);
+    return toAssistantAnswer(parsed, fallback);
   }
 }

@@ -141,6 +141,12 @@ export class SupabaseCareTaskRepository implements CareTaskRepository {
     if (!data) throw notFound("Care task not found.");
     return mapTaskRow(data as TaskRow);
   }
+
+  async delete(id: string): Promise<void> {
+    const { data, error } = await this.supabase.from("care_tasks").delete().eq("id", id).select("id").maybeSingle();
+    throwIfSupabaseError(error);
+    if (!data) throw notFound("Care task not found.");
+  }
 }
 
 export class SupabaseReminderRepository implements ReminderRepository {
@@ -180,6 +186,18 @@ export class SupabaseReminderRepository implements ReminderRepository {
     return ((data ?? []) as ReminderRow[]).map(mapReminderRow);
   }
 
+  async findDue(now: string, limit: number): Promise<CareReminder[]> {
+    const { data, error } = await this.supabase
+      .from("care_reminders")
+      .select("*")
+      .eq("status", "scheduled")
+      .lte("scheduled_for", now)
+      .order("scheduled_for", { ascending: true })
+      .limit(limit);
+    throwIfSupabaseError(error);
+    return ((data ?? []) as ReminderRow[]).map(mapReminderRow);
+  }
+
   async update(id: string, patch: Partial<CareReminder>): Promise<CareReminder> {
     const update: Record<string, unknown> = {};
     if (patch.title !== undefined) update.title = patch.title;
@@ -193,5 +211,11 @@ export class SupabaseReminderRepository implements ReminderRepository {
     throwIfSupabaseError(error);
     if (!data) throw notFound("Care reminder not found.");
     return mapReminderRow(data as ReminderRow);
+  }
+
+  async delete(id: string): Promise<void> {
+    const { data, error } = await this.supabase.from("care_reminders").delete().eq("id", id).select("id").maybeSingle();
+    throwIfSupabaseError(error);
+    if (!data) throw notFound("Care reminder not found.");
   }
 }

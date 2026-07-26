@@ -1,55 +1,43 @@
-import type { User as SupabaseAuthUser } from "@supabase/supabase-js";
-
 import type { User } from "@/domain/models";
-import { unauthorized } from "@/lib/errors";
+import { notFound } from "@/lib/errors";
 import {
   createSupabaseServerClient,
   type SupabaseAdminClient,
 } from "@/lib/supabase/server";
 
-export function getBearerToken(request: Request): string {
-  const authorization = request.headers.get("authorization");
+type ProfileRow = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at: string;
+};
 
-  if (!authorization?.startsWith("Bearer ")) {
-    throw unauthorized();
-  }
-
-  const token = authorization.slice("Bearer ".length).trim();
-
-  if (!token) {
-    throw unauthorized();
-  }
-
-  return token;
-}
-
-export function mapSupabaseUser(user: SupabaseAuthUser): User {
-  const metadata = user.user_metadata ?? {};
-
-  return {
-    id: user.id,
-    email: user.email ?? "",
-    fullName:
-      typeof metadata.full_name === "string"
-        ? metadata.full_name
-        : typeof metadata.name === "string"
-          ? metadata.name
-          : null,
-    avatarUrl: typeof metadata.avatar_url === "string" ? metadata.avatar_url : null,
-    createdAt: user.created_at ?? new Date().toISOString(),
-  };
-}
-
-export async function authenticateRequest(
-  request: Request,
+/**
+ * There is no sign-in flow, so every request acts as the single seeded
+ * profile (see scripts/seed-test-user.mjs). This app is single-tenant.
+ */
+export async function getDefaultActor(
   supabase: SupabaseAdminClient = createSupabaseServerClient(),
 ): Promise<User> {
-  const token = getBearerToken(request);
-  const { data, error } = await supabase.auth.getUser(token);
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
 
-  if (error || !data.user) {
-    throw unauthorized("Invalid or expired authentication token.");
+  if (error || !data) {
+    throw notFound("No user profile found. Run scripts/seed-test-user.mjs first.");
   }
 
-  return mapSupabaseUser(data.user);
+  const row = data as ProfileRow;
+
+  return {
+    id: row.id,
+    email: row.email,
+    fullName: row.full_name,
+    avatarUrl: row.avatar_url,
+    createdAt: row.created_at,
+  };
 }

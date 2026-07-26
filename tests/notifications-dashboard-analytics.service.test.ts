@@ -71,7 +71,42 @@ describe("Notifications, Dashboard, and Analytics", () => {
     const dashboard = await service.getDashboard(actorId, careSpaceId);
 
     expect(repository.assertCareSpaceMember).toHaveBeenCalledWith(careSpaceId, actorId);
-    expect(dashboard.dailyBriefing.todayPriorities).toEqual(["Confirm transport"]);
+    expect(dashboard.dailyBriefing?.todayPriorities).toEqual(["Confirm transport"]);
+    expect(dashboard.briefingUnavailable).toBe(false);
+  });
+
+  it("still returns care data when the AI briefing is unavailable", async () => {
+    // Verified against the live project: with no OPENAI_API_KEY the briefing
+    // throws OPENAI_NOT_CONFIGURED. The caregiver's tasks/reminders/timeline are
+    // fully available from Postgres, so the dashboard must degrade gracefully
+    // rather than 500 and hide everything.
+    const repository = {
+      assertCareSpaceMember: vi.fn().mockResolvedValue(undefined),
+      getDashboardSnapshot: vi.fn().mockResolvedValue({
+        patient: { name: "Grandma" },
+        carePlan: null,
+        todayTasks: [{ title: "Confirm transport" }],
+        upcomingAppointments: [],
+        reminders: [],
+        timeline: [],
+        alerts: [],
+        medicationStatus: [],
+        recentDocuments: [],
+        activityFeed: [],
+      }),
+    };
+    const briefing = {
+      generateDailyBriefing: vi
+        .fn()
+        .mockRejectedValue(new Error("OpenAI API key is not configured.")),
+    };
+    const service = new DashboardAggregator(repository, briefing);
+
+    const dashboard = await service.getDashboard(actorId, careSpaceId);
+
+    expect(dashboard.todayTasks).toEqual([{ title: "Confirm transport" }]);
+    expect(dashboard.dailyBriefing).toBeNull();
+    expect(dashboard.briefingUnavailable).toBe(true);
   });
 
   it("generates non-diagnostic structured care insights from observed platform data", async () => {

@@ -8,6 +8,8 @@ import type {
   CareTaskListFilters,
   CreateCareReminderInput,
   CreateCareTaskInput,
+  UpdateCareReminderInput,
+  UpdateCareTaskInput,
 } from "../types/models";
 import type { CareTaskRepository, ReminderRepository } from "../types/repositories";
 
@@ -73,6 +75,50 @@ export class CareManagementService {
     return completed;
   }
 
+  async updateTask(actorId: string, taskId: string, input: UpdateCareTaskInput): Promise<CareTask> {
+    const task = await this.tasks.findById(taskId);
+    if (!task) throw notFound("Care task not found.");
+
+    await this.tasks.assertCareSpaceMember(task.careSpaceId, actorId);
+    if (input.assignedTo) {
+      await this.tasks.assertCareSpaceMember(task.careSpaceId, input.assignedTo);
+    }
+
+    const patch: Partial<CareTask> = { ...input };
+    if (input.status === "completed") {
+      patch.completedAt = task.completedAt ?? new Date().toISOString();
+    } else if (input.status !== undefined) {
+      patch.completedAt = null;
+    }
+
+    const updated = await this.tasks.update(taskId, patch);
+    await this.events.publish({
+      type: "TaskUpdated",
+      careSpaceId: updated.careSpaceId,
+      taskId: updated.id,
+      title: updated.title,
+      updatedBy: actorId,
+      occurredAt: new Date().toISOString(),
+    });
+    return updated;
+  }
+
+  async deleteTask(actorId: string, taskId: string): Promise<void> {
+    const task = await this.tasks.findById(taskId);
+    if (!task) throw notFound("Care task not found.");
+
+    await this.tasks.assertCareSpaceMember(task.careSpaceId, actorId);
+    await this.tasks.delete(taskId);
+    await this.events.publish({
+      type: "TaskDeleted",
+      careSpaceId: task.careSpaceId,
+      taskId: task.id,
+      title: task.title,
+      deletedBy: actorId,
+      occurredAt: new Date().toISOString(),
+    });
+  }
+
   async listTasks(actorId: string, filters: CareTaskListFilters): Promise<CareTask[]> {
     await this.tasks.assertCareSpaceMember(filters.careSpaceId, actorId);
     return this.tasks.list(filters);
@@ -120,6 +166,48 @@ export class CareManagementService {
     });
 
     return triggered;
+  }
+
+  async updateReminder(actorId: string, reminderId: string, input: UpdateCareReminderInput): Promise<CareReminder> {
+    const reminder = await this.reminders.findById(reminderId);
+    if (!reminder) throw notFound("Care reminder not found.");
+
+    await this.tasks.assertCareSpaceMember(reminder.careSpaceId, actorId);
+    if (input.assignedTo) {
+      await this.tasks.assertCareSpaceMember(reminder.careSpaceId, input.assignedTo);
+    }
+
+    const patch: Partial<CareReminder> = { ...input };
+    if (input.status === "scheduled") {
+      patch.triggeredAt = null;
+    }
+
+    const updated = await this.reminders.update(reminderId, patch);
+    await this.events.publish({
+      type: "ReminderUpdated",
+      careSpaceId: updated.careSpaceId,
+      reminderId: updated.id,
+      title: updated.title,
+      updatedBy: actorId,
+      occurredAt: new Date().toISOString(),
+    });
+    return updated;
+  }
+
+  async deleteReminder(actorId: string, reminderId: string): Promise<void> {
+    const reminder = await this.reminders.findById(reminderId);
+    if (!reminder) throw notFound("Care reminder not found.");
+
+    await this.tasks.assertCareSpaceMember(reminder.careSpaceId, actorId);
+    await this.reminders.delete(reminderId);
+    await this.events.publish({
+      type: "ReminderDeleted",
+      careSpaceId: reminder.careSpaceId,
+      reminderId: reminder.id,
+      title: reminder.title,
+      deletedBy: actorId,
+      occurredAt: new Date().toISOString(),
+    });
   }
 
   async listReminders(actorId: string, filters: CareReminderListFilters): Promise<CareReminder[]> {

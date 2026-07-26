@@ -25,6 +25,22 @@ export type DomainEvent =
       occurredAt: string;
     }
   | {
+      type: "TaskUpdated";
+      careSpaceId: string;
+      taskId: string;
+      title: string;
+      updatedBy: string;
+      occurredAt: string;
+    }
+  | {
+      type: "TaskDeleted";
+      careSpaceId: string;
+      taskId: string;
+      title: string;
+      deletedBy: string;
+      occurredAt: string;
+    }
+  | {
       type: "ReminderCreated";
       careSpaceId: string;
       reminderId: string;
@@ -38,6 +54,30 @@ export type DomainEvent =
       reminderId: string;
       title: string;
       triggeredAt: string;
+      occurredAt: string;
+    }
+  | {
+      type: "ReminderUpdated";
+      careSpaceId: string;
+      reminderId: string;
+      title: string;
+      updatedBy: string;
+      occurredAt: string;
+    }
+  | {
+      type: "ReminderDeleted";
+      careSpaceId: string;
+      reminderId: string;
+      title: string;
+      deletedBy: string;
+      occurredAt: string;
+    }
+  | {
+      type: "ReminderMissed";
+      careSpaceId: string;
+      reminderId: string;
+      title: string;
+      missedAt: string;
       occurredAt: string;
     }
   | {
