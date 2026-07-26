@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { CareProvider } from "@/components/caregiver/CareProvider";
 import { CareToast } from "@/components/caregiver/CareToast";
 import { CaregiverShell } from "@/components/caregiver/CaregiverShell";
+import { Onboarding } from "@/components/caregiver/Onboarding";
 import { QuickSetupSheet } from "@/components/caregiver/QuickSetupSheet";
 import {
   getAppointments,
@@ -47,6 +48,7 @@ export default async function CaregiverLayout({ children }: { children: ReactNod
       </CaregiverShell>
       <QuickSetupSheet />
       <CareToast />
+      <Onboarding user={user} receiver={receiver} caregivers={caregivers} />
     </CareProvider>
   );
 }
