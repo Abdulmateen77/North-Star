@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { loadLiveCareBootstrap, type ApiTransport } from "@/data/live";
+import {
+  loadLiveCareBootstrap,
+  loadLiveCareSpace,
+  createLiveCareSpace,
+  type ApiTransport,
+} from "@/data/live";
 
 const userId = "11111111-1111-4111-8111-111111111111";
 const careSpaceId = "22222222-2222-4222-8222-222222222222";
@@ -129,6 +134,49 @@ describe("live care bootstrap", () => {
       ],
     });
     expect(seed?.reminders[0]?.timeLabel).toMatch(/8:00pm|20:00/);
+  });
+
+  it("loads the shared care-space identity for the care receiver assistant", async () => {
+    const api = makeApi();
+
+    await expect(loadLiveCareSpace(api)).resolves.toEqual({
+      id: careSpaceId,
+      name: "Margaret's Care",
+    });
+    expect(api.calls).toEqual(["/api/care-spaces"]);
+  });
+
+  it("creates a care space through the authenticated API transport", async () => {
+    const calls: Array<{ path: string; body: unknown }> = [];
+    const api: ApiTransport = {
+      async get<T>(): Promise<T> {
+        throw new Error("GET should not be called");
+      },
+      async post<T>(path: string, body?: unknown): Promise<T> {
+        calls.push({ path, body });
+        return {
+          careSpace: {
+            id: careSpaceId,
+            name: "Margaret's Care",
+            description: "Live test space",
+            ownerId: userId,
+            createdAt: "2026-01-01T00:00:00.000Z",
+            updatedAt: "2026-01-01T00:00:00.000Z",
+          },
+        } as T;
+      },
+    };
+
+    await expect(createLiveCareSpace("Margaret's Care", "Live test space", api)).resolves.toMatchObject({
+      id: careSpaceId,
+      name: "Margaret's Care",
+    });
+    expect(calls).toEqual([
+      {
+        path: "/api/care-spaces",
+        body: { name: "Margaret's Care", description: "Live test space" },
+      },
+    ]);
   });
 
   it("returns null when the signed-in user has no care space yet", async () => {

@@ -127,8 +127,14 @@ describe("DocumentService", () => {
 describe("MedicalRecordService", () => {
   it("persists AI output into normalized medical record tables and publishes events", async () => {
     const analysisRepository = { create: vi.fn().mockResolvedValue(undefined) };
-    const appointments = { createMany: vi.fn().mockResolvedValue([]) };
-    const medications = { createMany: vi.fn().mockResolvedValue([]) };
+    const appointments = {
+      createMany: vi.fn().mockResolvedValue([]),
+      findByCareSpaceId: vi.fn().mockResolvedValue([]),
+    };
+    const medications = {
+      createMany: vi.fn().mockResolvedValue([]),
+      findByCareSpaceId: vi.fn().mockResolvedValue([]),
+    };
     const conditions = { createMany: vi.fn().mockResolvedValue([]) };
     const instructions = { createMany: vi.fn().mockResolvedValue([]) };
     const events = { publish: vi.fn() };
@@ -159,6 +165,35 @@ describe("MedicalRecordService", () => {
     expect(events.publish).toHaveBeenCalledWith(expect.objectContaining({ type: "MedicalRecordCreated" }));
     expect(events.publish).toHaveBeenCalledWith(expect.objectContaining({ type: "AppointmentDetected" }));
     expect(events.publish).toHaveBeenCalledWith(expect.objectContaining({ type: "MedicationDetected" }));
+  });
+
+  it("lists normalized appointments and medications for a care space", async () => {
+    const appointments = {
+      createMany: vi.fn().mockResolvedValue([]),
+      findByCareSpaceId: vi.fn().mockResolvedValue([{ id: "appointment-1" }]),
+    };
+    const medications = {
+      createMany: vi.fn().mockResolvedValue([]),
+      findByCareSpaceId: vi.fn().mockResolvedValue([{ id: "medication-1" }]),
+    };
+    const service = new MedicalRecordService(
+      { create: vi.fn() },
+      appointments,
+      medications,
+      { createMany: vi.fn() },
+      { createMany: vi.fn() },
+      { publish: vi.fn() },
+    );
+
+    const [listedAppointments, listedMedications] = await Promise.all([
+      service.listAppointments(careSpaceId),
+      service.listMedications(careSpaceId),
+    ]);
+
+    expect(listedAppointments).toEqual([{ id: "appointment-1" }]);
+    expect(listedMedications).toEqual([{ id: "medication-1" }]);
+    expect(appointments.findByCareSpaceId).toHaveBeenCalledWith(careSpaceId);
+    expect(medications.findByCareSpaceId).toHaveBeenCalledWith(careSpaceId);
   });
 });
 

@@ -130,13 +130,17 @@ export function AssistantView({
               }
             }}
             rows={1}
-            placeholder="Ask anything about this care space…"
+            placeholder={
+              careSpaceId === null
+                ? "Create a care space above to start asking…"
+                : "Ask anything about this care space…"
+            }
             aria-label="Ask the assistant"
             className="max-h-40 min-h-11 flex-1 resize-none bg-transparent px-3.5 py-2.5 text-olive-900 placeholder:text-olive-400 focus:outline-none"
           />
           <button
             type="submit"
-            disabled={draft.trim() === "" || thinking}
+            disabled={draft.trim() === "" || thinking || careSpaceId === null}
             aria-label="Send"
             className="grid size-11 shrink-0 place-items-center rounded-full bg-clay-500 text-white transition duration-200 hover:bg-clay-600 disabled:opacity-40"
           >

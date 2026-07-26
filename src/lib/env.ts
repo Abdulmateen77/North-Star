@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { normalizeSupabaseUrl } from "./supabase/url";
+
 /**
  * Environment files commonly contain blank assignments (`OPENAI_API_KEY=`) for
  * values the operator has not filled in yet. Node surfaces those as empty
@@ -48,7 +50,18 @@ export type Env = z.infer<typeof envSchema>;
 let cachedEnv: Env | null = null;
 
 export function parseEnv(source: NodeJS.ProcessEnv): Env {
-  const result = envSchema.safeParse(blankToUndefined(source));
+  const normalizedSource = blankToUndefined(source);
+  const supabaseUrl = normalizedSource.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (supabaseUrl) {
+    try {
+      normalizedSource.NEXT_PUBLIC_SUPABASE_URL = normalizeSupabaseUrl(supabaseUrl);
+    } catch {
+      // Let Zod produce the normal, user-facing invalid URL error below.
+    }
+  }
+
+  const result = envSchema.safeParse(normalizedSource);
 
   if (!result.success) {
     const issues = result.error.issues

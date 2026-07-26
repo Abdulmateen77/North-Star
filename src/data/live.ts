@@ -22,6 +22,10 @@ interface CareSpacesResponse {
   careSpaces: CareSpace[];
 }
 
+interface CareSpaceResponse {
+  careSpace: CareSpace;
+}
+
 interface TasksResponse {
   tasks: BackendCareTask[];
 }
@@ -87,6 +91,17 @@ export function toCarePerson(user: User, index = 0): CarePerson {
   };
 }
 
+export async function loadLiveCareSpace(
+  transport: ApiTransport = defaultApi,
+): Promise<Pick<CareSpace, "id" | "name"> | null> {
+  const { careSpaces } = await transport.get<CareSpacesResponse>("/api/care-spaces");
+  const activeCareSpace = careSpaces[0] ?? null;
+
+  return activeCareSpace === null
+    ? null
+    : { id: activeCareSpace.id, name: activeCareSpace.name };
+}
+
 export async function loadLiveCareBootstrap(
   transport: ApiTransport = defaultApi,
   now: Date = new Date(),
@@ -114,6 +129,19 @@ export async function loadLiveCareBootstrap(
     tasks: tasks.map((task) => toCareTask(task, now)),
     reminders: reminders.map(toCareReminder),
   };
+}
+
+export async function createLiveCareSpace(
+  name: string,
+  description: string | null = null,
+  transport: ApiTransport = defaultApi,
+): Promise<CareSpace> {
+  const post = requirePost(transport);
+  const response = await post<CareSpaceResponse>("/api/care-spaces", {
+    name,
+    description,
+  });
+  return response.careSpace;
 }
 
 function dueLabelToDueAt(label: string): string | null {

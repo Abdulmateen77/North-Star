@@ -22,6 +22,17 @@ describe("environment management", () => {
     });
   });
 
+  it("normalizes a Supabase REST endpoint back to the project root", () => {
+    const env = parseEnv({
+      NODE_ENV: "test",
+      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co/rest/v1",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key",
+      SUPABASE_SERVICE_ROLE_KEY: "service-key",
+    });
+
+    expect(env.NEXT_PUBLIC_SUPABASE_URL).toBe("https://example.supabase.co");
+  });
+
   it("rejects incomplete backend environment configuration", () => {
     expect(() =>
       parseEnv({

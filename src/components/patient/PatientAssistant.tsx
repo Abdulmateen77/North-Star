@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { StarMark } from "@/components/ui/Logo";
 import { cn } from "@/components/ui/cn";
+import { askLiveAssistant, loadLiveCareSpace } from "@/data/live";
 
  type Message = { id: string; author: "user" | "assistant"; body: string };
 
@@ -20,15 +21,38 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
   ]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [careSpaceId, setCareSpaceId] = useState<string | null>(null);
+  const [connectionState, setConnectionState] = useState<
+    "loading" | "ready" | "empty" | "error"
+  >("loading");
   const endRef = useRef<HTMLDivElement>(null);
   const hasInteracted = useRef(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loadLiveCareSpace()
+      .then((careSpace) => {
+        if (cancelled) return;
+        setCareSpaceId(careSpace?.id ?? null);
+        setConnectionState(careSpace === null ? "empty" : "ready");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setConnectionState("error");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!hasInteracted.current) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, thinking]);
 
-  function send(question: string) {
+  async function send(question: string) {
     const trimmed = question.trim();
     if (trimmed === "" || thinking) return;
 
@@ -41,18 +65,31 @@ export function PatientAssistant({ greeting }: { greeting: string }) {
     setDraft("");
     setThinking(true);
 
-    window.setTimeout(() => {
+    try {
+      if (careSpaceId === null) {
+        throw new Error(
+          connectionState === "loading"
+            ? "I am still connecting to the shared care space. Please try again in a moment."
+            : connectionState === "empty"
+              ? "Your caregiver has not created a shared care space yet. Ask them to set one up first."
+              : "I could not connect to the shared care space right now. Please try again.",
+        );
+      }
+
+      const answer = await askLiveAssistant(careSpaceId, trimmed);
+      setMessages((current) => [...current, { id: answer.id, author: "assistant", body: answer.body }]);
+    } catch (error) {
       setMessages((current) => [
         ...current,
         {
           id: `a-${Date.now()}`,
           author: "assistant",
-          body:
-            "The patient assistant is waiting for a live care-space connection. Ask your caregiver to add records and enable the shared patient view.",
+          body: error instanceof Error ? error.message : "I could not reach the live assistant right now.",
         },
       ]);
+    } finally {
       setThinking(false);
-    }, 500);
+    }
   }
 
   return (

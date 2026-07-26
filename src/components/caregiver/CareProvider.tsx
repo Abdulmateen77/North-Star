@@ -12,6 +12,7 @@ import {
 
 import {
   completeLiveTask,
+  createLiveCareSpace,
   createLiveReminder,
   createLiveTask,
   loadLiveCareBootstrap,
@@ -34,12 +35,16 @@ interface CareContextValue {
   medications: Medication[];
   appointments: Appointment[];
   people: CarePerson[];
+  isLiveLoading: boolean;
 
   addTask: (task: CareTask) => void;
   addReminder: (reminder: Reminder) => void;
   addMedication: (medication: Medication) => void;
   addAppointment: (appointment: Appointment) => void;
   setTaskStatus: (id: string, status: CareTask["status"]) => void;
+  crossOutTask: (id: string) => void;
+  convertTaskToReminder: (id: string) => void;
+  createCareSpace: (name: string, description?: string | null) => Promise<void>;
 
   /** Which quick-setup form is open, or null when the sheet is closed. */
   setupKind: SetupKind | null;
@@ -79,6 +84,7 @@ export function CareProvider({
   const [careSpaceId, setCareSpaceId] = useState<string | null>(null);
   const [careSpaceName, setCareSpaceName] = useState<string | null>(null);
   const [carePeople, setCarePeople] = useState(people);
+  const [isLiveLoading, setIsLiveLoading] = useState(true);
   const [tasks, setTasks] = useState(initialTasks);
   const [reminders, setReminders] = useState(initialReminders);
   const [medications, setMedications] = useState(initialMedications);
@@ -91,16 +97,22 @@ export function CareProvider({
 
     loadLiveCareBootstrap()
       .then((seed) => {
-        if (!active || seed === null) return;
+        if (!active) return;
+        if (seed === null) {
+          setIsLiveLoading(false);
+          return;
+        }
         setCareSpaceId(seed.careSpaceId);
         setCareSpaceName(seed.careSpaceName);
         setCarePeople([seed.currentUser]);
         setTasks(seed.tasks);
         setReminders(seed.reminders);
         setToast(`Loaded ${seed.careSpaceName} from Supabase`);
+        setIsLiveLoading(false);
       })
       .catch(() => {
         if (!active) return;
+        setIsLiveLoading(false);
         setToast("Live care data is unavailable right now");
       });
 
@@ -109,11 +121,30 @@ export function CareProvider({
     };
   }, []);
 
+  const createCareSpace = useCallback(async (name: string, description: string | null = null) => {
+    setIsLiveLoading(true);
+    try {
+      await createLiveCareSpace(name, description);
+      const seed = await loadLiveCareBootstrap();
+      if (seed === null) {
+        throw new Error("The care space was created but could not be loaded.");
+      }
+
+      setCareSpaceId(seed.careSpaceId);
+      setCareSpaceName(seed.careSpaceName);
+      setCarePeople([seed.currentUser]);
+      setTasks(seed.tasks);
+      setReminders(seed.reminders);
+      setToast(`Created ${seed.careSpaceName} and connected it to Supabase`);
+    } finally {
+      setIsLiveLoading(false);
+    }
+  }, []);
+
   const addTask = useCallback(
     (task: CareTask) => {
       if (careSpaceId === null) {
-        setTasks((current) => [task, ...current]);
-        setToast("Task kept locally until a care space is available");
+        setToast("Create a care space before adding tasks");
         return;
       }
 
@@ -132,8 +163,7 @@ export function CareProvider({
   const addReminder = useCallback(
     (reminder: Reminder) => {
       if (careSpaceId === null) {
-        setReminders((current) => [reminder, ...current]);
-        setToast("Reminder kept locally until a care space is available");
+        setToast("Create a care space before adding reminders");
         return;
       }
 
@@ -180,6 +210,49 @@ export function CareProvider({
     );
   }, []);
 
+  const crossOutTask = useCallback(
+    (id: string) => {
+      setTaskStatus(id, "done");
+    },
+    [setTaskStatus],
+  );
+
+  const convertTaskToReminder = useCallback(
+    (id: string) => {
+      if (careSpaceId === null) {
+        setToast("Create a care space before adding reminders");
+        return;
+      }
+
+      const task = tasks.find((candidate) => candidate.id === id);
+      if (task === undefined) return;
+
+      const timeLabel = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }).replace(" ", "");
+      const reminder: Reminder = {
+        id: `reminder-from-${task.id}`,
+        title: task.title,
+        kind: "custom",
+        timeLabel,
+        repeatLabel: "Once",
+        enabled: true,
+        lastConfirmed: null,
+      };
+
+      createLiveReminder(careSpaceId, reminder)
+        .then((saved) => {
+          setReminders((current) => [saved, ...current]);
+          setToast("Task converted to a reminder in Supabase");
+        })
+        .catch(() => {
+          setToast("Could not create the reminder in Supabase");
+        });
+    },
+    [careSpaceId, tasks],
+  );
+
   const value = useMemo<CareContextValue>(
     () => ({
       careSpaceId,
@@ -189,11 +262,15 @@ export function CareProvider({
       medications,
       appointments,
       people: carePeople,
+      isLiveLoading,
       addTask,
       addReminder,
       addMedication,
       addAppointment,
       setTaskStatus,
+      crossOutTask,
+      convertTaskToReminder,
+      createCareSpace,
       setupKind,
       openSetup: setSetupKind,
       closeSetup: () => setSetupKind(null),
@@ -208,11 +285,15 @@ export function CareProvider({
       medications,
       appointments,
       carePeople,
+      isLiveLoading,
       addTask,
       addReminder,
       addMedication,
       addAppointment,
       setTaskStatus,
+      crossOutTask,
+      convertTaskToReminder,
+      createCareSpace,
       setupKind,
       toast,
     ],

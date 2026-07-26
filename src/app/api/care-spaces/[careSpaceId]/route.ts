@@ -5,7 +5,7 @@ import {
   resolveRouteParams,
   validateParams,
 } from "@/lib/validation";
-import { getDefaultActor } from "@/services/auth.service";
+import { getActorFromRequest } from "@/services/auth.service";
 import { createCareSpaceService } from "@/services/factory";
 
 type CareSpaceRouteContext = {
@@ -22,7 +22,7 @@ export async function GET(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor();
+    const actor = await getActorFromRequest(request);
     const careSpaceId = await getCareSpaceId(context);
     const careSpace = await createCareSpaceService().getCareSpace(actor, careSpaceId);
 
@@ -35,7 +35,7 @@ export async function PATCH(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor();
+    const actor = await getActorFromRequest(request);
     const careSpaceId = await getCareSpaceId(context);
     const input = await parseJsonBody(request, updateCareSpaceSchema);
     const careSpace = await createCareSpaceService().updateCareSpace(
@@ -53,7 +53,7 @@ export async function DELETE(
   context: CareSpaceRouteContext,
 ): Promise<Response> {
   return withApiHandler(request, async () => {
-    const actor = await getDefaultActor();
+    const actor = await getActorFromRequest(request);
     const careSpaceId = await getCareSpaceId(context);
     await createCareSpaceService().deleteCareSpace(actor, careSpaceId);
 

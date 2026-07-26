@@ -52,6 +52,7 @@ export interface AppointmentRepository {
     documentId: string,
     appointments: ExtractedAppointmentInput[],
   ): Promise<Appointment[]> | Promise<void>;
+  findByCareSpaceId(careSpaceId: string): Promise<Appointment[]>;
   findByDocumentId?(documentId: string): Promise<Appointment[]>;
 }
 
@@ -61,6 +62,7 @@ export interface MedicationRepository {
     documentId: string,
     medications: ExtractedMedicationInput[],
   ): Promise<Medication[]> | Promise<void>;
+  findByCareSpaceId(careSpaceId: string): Promise<Medication[]>;
   findByDocumentId?(documentId: string): Promise<Medication[]>;
 }
 

@@ -1,6 +1,7 @@
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 
+import { CareSpaceSetup } from "@/components/caregiver/CareSpaceSetup";
 import { DashboardPanels } from "@/components/caregiver/DashboardPanels";
 import { PageBody, PageHeader } from "@/components/caregiver/PageHeader";
 import { SetupActions } from "@/components/caregiver/SetupButton";
@@ -47,6 +48,8 @@ export default async function DashboardPage() {
         description="Add records to build a live care plan from Supabase."
       />
 
+      <CareSpaceSetup />
+
       {/* --- The briefing. The brand's loudest surface, and the first thing a
               caregiver should read. ------------------------------------------ */}
       <Card
@@ -82,7 +85,7 @@ export default async function DashboardPage() {
       <section className="animate-fade-up mt-8">
         <h2 className="text-lg text-olive-900">Set something up</h2>
         <p className="mt-1 text-sm text-olive-600">
-          Tasks and reminders save to the live care space when you are signed in.
+          Tasks and reminders save directly to the live care space.
         </p>
         <div className="mt-4">
           <SetupActions />

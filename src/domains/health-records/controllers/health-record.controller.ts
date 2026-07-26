@@ -4,7 +4,7 @@ import {
   resolveRouteParams,
   validateParams,
 } from "@/lib/validation";
-import { getDefaultActor } from "@/services/auth.service";
+import { getActorFromRequest } from "@/services/auth.service";
 
 import { toDocumentDetailsDto } from "../dto/document.dto";
 import {
@@ -34,7 +34,7 @@ export class HealthRecordController {
 
   async uploadDocument(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor();
+      const actor = await getActorFromRequest(request);
       const formData = await request.formData().catch(() => {
         throw badRequest("Request body must be multipart form data.");
       });
@@ -58,7 +58,7 @@ export class HealthRecordController {
 
   async listDocuments(request: Request): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor();
+      const actor = await getActorFromRequest(request);
       const query = parseQuery(request);
       const result = await this.healthRecords.listDocuments(actor.id, {
         careSpaceId: query.careSpaceId,
@@ -79,7 +79,7 @@ export class HealthRecordController {
     context: HealthRecordDocumentRouteContext,
   ): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor();
+      const actor = await getActorFromRequest(request);
       const documentId = await getDocumentId(context);
       const details = await this.healthRecords.getDocument(documentId, actor.id);
 
@@ -92,7 +92,7 @@ export class HealthRecordController {
     context: HealthRecordDocumentRouteContext,
   ): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor();
+      const actor = await getActorFromRequest(request);
       const documentId = await getDocumentId(context);
       await this.healthRecords.deleteDocument(documentId, actor.id);
 
@@ -105,7 +105,7 @@ export class HealthRecordController {
     context: HealthRecordDocumentRouteContext,
   ): Promise<Response> {
     return withApiHandler(request, async () => {
-      const actor = await getDefaultActor();
+      const actor = await getActorFromRequest(request);
       const documentId = await getDocumentId(context);
       const result = await this.healthRecords.analyzeDocument({
         documentId,

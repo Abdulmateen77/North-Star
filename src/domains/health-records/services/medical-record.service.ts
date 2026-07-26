@@ -97,4 +97,12 @@ export class MedicalRecordService {
       instructions,
     };
   }
+
+  async listAppointments(careSpaceId: string) {
+    return this.appointments.findByCareSpaceId(careSpaceId);
+  }
+
+  async listMedications(careSpaceId: string) {
+    return this.medications.findByCareSpaceId(careSpaceId);
+  }
 }

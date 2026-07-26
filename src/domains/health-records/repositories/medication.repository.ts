@@ -78,4 +78,16 @@ export class SupabaseMedicationRepository implements MedicationRepository {
 
     return ((data ?? []) as MedicationRow[]).map(mapMedicationRow);
   }
+
+  async findByCareSpaceId(careSpaceId: string): Promise<Medication[]> {
+    const { data, error } = await this.supabase
+      .from("medications")
+      .select("*")
+      .eq("care_space_id", careSpaceId)
+      .order("name", { ascending: true });
+
+    throwIfSupabaseError(error);
+
+    return ((data ?? []) as MedicationRow[]).map(mapMedicationRow);
+  }
 }

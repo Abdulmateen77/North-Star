@@ -84,4 +84,16 @@ export class SupabaseAppointmentRepository implements AppointmentRepository {
 
     return ((data ?? []) as AppointmentRow[]).map(mapAppointmentRow);
   }
+
+  async findByCareSpaceId(careSpaceId: string): Promise<Appointment[]> {
+    const { data, error } = await this.supabase
+      .from("appointments")
+      .select("*")
+      .eq("care_space_id", careSpaceId)
+      .order("date", { ascending: true, nullsFirst: false });
+
+    throwIfSupabaseError(error);
+
+    return ((data ?? []) as AppointmentRow[]).map(mapAppointmentRow);
+  }
 }
